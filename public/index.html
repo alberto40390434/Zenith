@@ -74,19 +74,39 @@
 		</footer>
 
 		<script>
-			// This makes the Top Bar search box trigger your existing search logic
-			function navSearch() {
-				const val = document.getElementById('nav-address').value;
-				if (val.trim()) {
-					const mainInput = document.getElementById('sj-address');
-					mainInput.value = val;
-					document.getElementById('sj-form').dispatchEvent(new Event('submit'));
-					
-					// Hide the home screen and show the iframe
-					document.getElementById('content-area').style.display = 'none';
-					document.getElementById('proxy-view').style.display = 'block';
-				}
-			}
-		</script>
+    // The main function that runs the search for BOTH boxes
+    function launchProxy(val) {
+        if (!val.trim()) return;
+        
+        let url = val.trim();
+        // If it's not a URL, make it a Google search
+        if (!url.includes('.') || url.includes(' ')) {
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        } else if (!url.startsWith('http')) {
+            url = 'https://' + url;
+        }
+
+        // Hide the "Chunky" home screen and show the sleek iframe
+        document.getElementById('content-area').style.display = 'none';
+        const frame = document.getElementById('proxy-view');
+        frame.style.display = 'block';
+        
+        // Encode the URL and load it through your Scramjet service
+        frame.src = '/service/' + btoa(url);
+    }
+
+    // Link the Top Bar search (Re-search)
+    function navSearch() {
+        const val = document.getElementById('nav-address').value;
+        launchProxy(val);
+    }
+
+    // Link the Main Middle search (Fixes your broken box)
+    document.getElementById('sj-form').onsubmit = function(e) {
+        e.preventDefault();
+        const val = document.getElementById('sj-address').value;
+        launchProxy(val);
+    };
+</script>
 	</body>
 </html>
