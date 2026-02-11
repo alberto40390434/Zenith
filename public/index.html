@@ -2,13 +2,10 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 		<title>Zenith</title>
 
-		<link rel="shortcut icon" content="Zenith.png" />
+		<link rel="icon" type="image/png" href="Zenith.png" />
 	
 		<script src="/scram/scramjet.all.js"></script>
 		<script src="/baremux/index.js"></script>
@@ -20,47 +17,76 @@
 	</head>
 
 	<body>
-		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-			<img class="logo" src="Zenith.png" alt="Zenith" />
-			<h1>Zenith | AC</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-				Scramjet is an experimental interception based web proxy designed to
-				evade internet censorship, bypass arbitrary web browser restrictions and
-				innovate web proxy technologies.
-			</p>
+		<nav class="navbar">
+			<div class="nav-left" onclick="location.reload()">
+				<img src="Zenith.png" class="nav-logo" alt="Zenith" />
+				<span class="nav-title">ZENITH</span>
+			</div>
+			
+			<div class="nav-center">
+				<form id="nav-search-form" onsubmit="event.preventDefault(); navSearch();">
+					<input id="nav-address" type="text" placeholder="Re-search..." class="nav-input" />
+				</form>
+			</div>
+
+			<div class="nav-right">
+				<button onclick="location.reload()" class="nav-btn">🏠 HOME</button>
+				<button class="nav-btn">⌨️ COMMANDS</button>
+				<button class="nav-btn">⚙️ SETTINGS</button>
+			</div>
+		</nav>
+
+		<div id="content-area">
+			<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
+				<img class="logo" src="Zenith.png" alt="Zenith" />
+				<h1>Zenith | AC</h1>
+			</div>
+			<div class="flex-center desc left-margin">
+				<p>
+					Scramjet is an experimental interception based web proxy designed to
+					evade internet censorship, bypass arbitrary web browser restrictions and
+					innovate web proxy technologies.
+				</p>
+			</div>
+
+			<form id="sj-form" class="flex-center">
+				<input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+				<input id="sj-address" type="text" placeholder="Search the web freely" autofocus />
+			</form>
+
+			<div class="desc left-margin">
+				<p id="sj-error"></p>
+				<pre id="sj-error-code"></pre>
+			</div>
 		</div>
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.google.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
+		<iframe id="proxy-view" style="display:none;"></iframe>
+
 		<footer>
 			<div>
-				<a
-					title="The Mercury Workshop GitHub organization"
-					href="https://github.com/MercuryWorkshop"
-					>Mercury Workshop</a
-				>
-				<a
-					title="The example demo app for Scramjet"
-					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
-					>GitHub</a
-				>
+				<a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop">Mercury Workshop</a>
+				<a title="The example demo app for Scramjet" href="https://github.com/MercuryWorkshop/Scramjet-Demo">GitHub</a>
 				<a title="License information" href="credits.html">Credits</a>
 			</div>
 			<div>
 				<span>Scramjet &copy; MW 2025</span>
 			</div>
 		</footer>
+
+		<script>
+			// This makes the Top Bar search box trigger your existing search logic
+			function navSearch() {
+				const val = document.getElementById('nav-address').value;
+				if (val.trim()) {
+					const mainInput = document.getElementById('sj-address');
+					mainInput.value = val;
+					document.getElementById('sj-form').dispatchEvent(new Event('submit'));
+					
+					// Hide the home screen and show the iframe
+					document.getElementById('content-area').style.display = 'none';
+					document.getElementById('proxy-view').style.display = 'block';
+				}
+			}
+		</script>
 	</body>
 </html>
