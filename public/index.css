@@ -1,159 +1,87 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap");
-
+/* Base styles */
 body {
-	font-family: "Roboto", Arial, Helvetica, sans-serif;
-	margin: 0;
-	background: #111;
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
+    margin: 0;
+    background-color: #000;
+    color: white;
+    font-family: sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.flex-center {
-	display: flex;
-	justify-content: center;
+/* Slim Top Bar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 15px;
+    background-color: #0a0a0a;
+    border-bottom: 1px solid #222;
+    height: 45px;
 }
 
-.header-center {
-	align-items: center;
-	flex-direction: column;
-	margin-top: 10%;
+.nav-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.nav-logo { height: 24px; }
+.nav-title { font-weight: bold; font-size: 14px; letter-spacing: 1px; }
+
+/* The "Re-search" box */
+.nav-center { flex-grow: 1; max-width: 600px; margin: 0 20px; }
+.nav-input {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
 }
 
-.left-margin {
-	margin: 0px 16px;
+.nav-right { display: flex; gap: 10px; }
+.nav-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #ccc;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+}
+.nav-btn:hover { background: #222; color: white; }
+
+/* Main Hero Content */
+#content-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
-#sj-frame {
-	border: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: #111;
-}
+.logo { width: 180px; margin-bottom: 10px; }
+h1 { font-size: 2.5rem; letter-spacing: 8px; margin: 10px 0; }
 
-#sj-error {
-	color: #ff6666 !important;
-	white-space: pre-wrap;
-}
-
-#sj-error-code {
-	font-size: 12px;
-	color: #fff;
-	font-family: "Courier New", Courier, monospace;
-}
-
-.logo {
-	height: 25vh;
-}
-
-.logo-wrapper .text {
-	font-size: 75px;
-	color: #fff;
-}
-
-.logo-wrapper h1 {
-	color: white;
-}
-
-footer {
-	margin: 0 16px;
-	margin-top: auto;
-	display: flex;
-	flex-direction: column;
-	line-height: 30px;
-	margin-bottom: 20px;
-}
-
-footer > div {
-	display: flex;
-	justify-content: left;
-	align-items: center;
-	flex-wrap: wrap;
-	margin-bottom: 15px;
-}
-
-footer a,
-footer span {
-	margin: 0 15px;
-	text-decoration: none;
-	color: #fff;
-	font-size: 15px;
-}
-
-footer a {
-	cursor: pointer;
-}
-
-footer a:hover {
-	text-decoration: underline;
-}
-
-.desc p {
-	width: 560px;
-	color: rgba(253, 253, 253, 0.514);
-}
-
+/* Fix the main search box */
 #sj-address {
-	background: none;
-	font-family: inherit;
-	padding: 0px 17px;
-	height: 48px;
-	border: 1px solid rgb(255, 255, 255, 0.2);
-	color: var(--text-color);
-	border-radius: 3px;
-	outline: none;
-	width: 350px;
-	margin-top: 5px;
-	border-radius: 50px;
-	color: #fff;
-	transition: border-radius 0.1s;
+    width: 450px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    font-size: 16px;
+    outline: none;
 }
 
-#sj-address:focus {
-	border: 1px solid rgba(253, 253, 253, 0.514);
-	border-radius: 6px;
+/* Full screen iframe */
+#proxy-view {
+    flex-grow: 1;
+    width: 100%;
+    border: none;
+    display: none;
 }
 
-.credit {
-	border-radius: 10px;
-	padding: 10px;
-	display: block;
-	border: #fff 1px solid;
-	color: #fff;
-	display: flex;
-	flex-wrap: wrap;
-	margin-bottom: 15px;
-}
-
-.credit label {
-	margin-left: auto;
-	margin-right: 15px;
-}
-
-.credit a,
-.credit label {
-	color: white;
-	text-decoration: underline;
-	text-align: right;
-}
-
-.credit pre {
-	display: none;
-	width: 100%;
-}
-
-.credit label::after {
-	content: "show license";
-	cursor: pointer;
-}
-
-.credit input:checked + label::after {
-	content: "hide license";
-}
-
-.credit input:checked ~ pre {
-	display: block;
-}
+footer { padding: 10px; font-size: 12px; border-top: 1px solid #222; display: flex; justify-content: space-between; }
+footer a { color: #888; text-decoration: none; margin-right: 15px; }
