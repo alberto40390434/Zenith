@@ -192,6 +192,18 @@
         const iframe = document.getElementById("sj-frame");
         const contentArea = document.getElementById("content-area");
 
+        // Register service worker on page load
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    await navigator.serviceWorker.register('/sw.js', { scope: '/service/' });
+                    console.log('Service worker registered successfully');
+                } catch (err) {
+                    console.error('Service worker registration failed:', err);
+                }
+            });
+        }
+
         async function search(input) {
             try {
                 let url = input.trim();
