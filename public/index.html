@@ -54,12 +54,12 @@
         <script>
     <script>
   <script>
-    // 1. The core function to launch a search
+    // This is the main "engine" for Zenith search
     function launchZenith(val) {
-        if (!val || !val.trim()) return;
+        if (!val) return;
         let url = val.trim();
         
-        // Turn keywords into a Google search link
+        // Turn "poki" into a Google link
         if (!url.includes('.') || url.includes(' ')) {
             url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
         } else if (!url.startsWith('http')) {
@@ -69,38 +69,35 @@
         const mainContent = document.getElementById('content-area');
         const frame = document.getElementById('proxy-view');
         
-        // Hide the Zenith landing page and show the web window
+        // Hide the Zenith home and show the web window
         if (mainContent) mainContent.style.display = 'none';
         if (frame) {
             frame.style.display = 'block';
-            // Use btoa to encode the URL for Scramjet
-            frame.src = '/service/' + btoa(url);
+            frame.src = '/service/' + btoa(url); // Standard Scramjet encoding
         }
     }
 
-    // 2. Connect the Top "Re-search" Bar
-    function navSearch() {
-        const navInput = document.getElementById('nav-address');
-        if (navInput) {
-            launchZenith(navInput.value);
-        }
-    }
-
-    // 3. Connect the Middle Search Box when the page loads
+    // Connect everything once the page is ready
     document.addEventListener('DOMContentLoaded', () => {
-        const mainForm = document.getElementById('sj-form');
-        if (mainForm) {
-            mainForm.onsubmit = function(e) {
+        // 1. Connect the Top Bar (nav-address)
+        const topForm = document.querySelector('.nav-center form');
+        if (topForm) {
+            topForm.onsubmit = (e) => {
                 e.preventDefault();
-                const mainInput = document.getElementById('sj-address');
-                if (mainInput) {
-                    launchZenith(mainInput.value);
-                }
+                launchZenith(document.getElementById('nav-address').value);
+            };
+        }
+
+        // 2. Connect the Middle Box (sj-form)
+        const middleForm = document.getElementById('sj-form');
+        if (middleForm) {
+            middleForm.onsubmit = (e) => {
+                e.preventDefault();
+                launchZenith(document.getElementById('sj-address').value);
             };
         }
     });
 
-    // 4. Simple Home Reset
     function goHome() {
         window.location.reload();
     }
