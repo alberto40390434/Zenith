@@ -1,16 +1,28 @@
-importScripts("/scram/scramjet.all.js");
+importScripts("/scram/scramjet.wasm.js");
+importScripts("/scram/scramjet.codecs.js");
+importScripts("/scram/scramjet.config.js");
 
-const { ScramjetServiceWorker } = $scramjetLoadWorker();
-const scramjet = new ScramjetServiceWorker();
+self.$scramjet = {
+    config: {
+        prefix: "/service/",
+        codec: "xor",
+        files: {
+            wasm: "/scram/scramjet.wasm.wasm",
+            worker: "/scram/scramjet.worker.js",
+            client: "/scram/scramjet.client.js",
+            shared: "/scram/scramjet.shared.js",
+            sync: "/scram/scramjet.sync.js",
+        },
+    },
+};
 
-async function handleRequest(event) {
-	await scramjet.loadConfig();
-	if (scramjet.route(event)) {
-		return scramjet.fetch(event);
-	}
-	return fetch(event.request);
-}
+self.ScramjetServiceWorker.prototype.route = function(event) {
+    return event.request.url.startsWith(location.origin + self.$scramjet.config.prefix);
+};
 
 self.addEventListener("fetch", (event) => {
-	event.respondWith(handleRequest(event));
+    const sw = new ScramjetServiceWorker();
+    if (sw.route(event)) {
+        event.respondWith(sw.fetch(event));
+    }
 });
