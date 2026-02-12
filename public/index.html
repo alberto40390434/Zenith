@@ -40,7 +40,7 @@
         </form>
     </div>
 
-    <iframe id="proxy-view" style="display:none; width:100%; height:calc(100vh - 45px); border:none; background:white;"></iframe>
+    <iframe id="proxy-view" style="display:none; width:100%; height:calc(100vh - 45px); border:none;"></iframe>
 
     <footer>
         <div><span>Zenith &copy; 2026</span></div>
@@ -69,7 +69,7 @@
         if (mainContent) mainContent.style.display = 'none';
         if (frame) {
             frame.style.display = 'block';
-            frame.src = '/service/' + btoa(url); // Standard Scramjet encoding
+            frame.src = '/scram/service/' + encodeURIComponent(url);
         }
     }
 
