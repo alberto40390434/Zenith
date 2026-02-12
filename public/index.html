@@ -20,6 +20,23 @@
 	</head>
 
 	<body>
+		<body>
+    <nav class="navbar">
+        <div class="nav-left" onclick="goHome()">
+            <img src="Zenith.png" class="nav-logo">
+            <span class="nav-title">ZENITH</span>
+        </div>
+        <div class="nav-center">
+            <form id="nav-form" onsubmit="return navSearch(event)">
+                <input id="nav-address" type="text" placeholder="Search with Zenith..." class="nav-input">
+            </form>
+        </div>
+        <div class="nav-right">
+            <button onclick="goHome()" class="nav-btn">🏠 HOME</button>
+            <button class="nav-btn">⌨️ COMMANDS</button>
+            <button class="nav-btn">⚙️ SETTINGS</button>
+        </div>
+    </nav>
 		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
 			<img class="nav-logo" src="Zenith.png" alt="Zenith" />
 			<h1>Zenith | AC</h1>
