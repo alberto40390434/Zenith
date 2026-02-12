@@ -52,81 +52,45 @@
 
     <script>
         <script>
+    <script>
+    // All that code goes inside here
     function launchZenith(val) {
         if (!val.trim()) return;
-        
         let url = val.trim();
-        // If it's a search term like "poki", turn it into a full Google URL
         if (!url.includes('.') || url.includes(' ')) {
             url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
         } else if (!url.startsWith('http')) {
             url = 'https://' + url;
         }
 
-        // Hide home, show the iframe window
         const mainContent = document.getElementById('content-area');
         const frame = document.getElementById('proxy-view');
         
-        if (mainContent) mainContent.style.display = 'none';
-        if (frame) {
-            frame.style.display = 'block';
-            // Encode the URL so the proxy service understands it
-            frame.src = __uv$config.prefix + __uv$config.encodeUrl(url); 
-        }
-    }
+        mainContent.style.display = 'none';
+        frame.style.display = 'block';
+        
+        // This connects to your proxy engine
+        frame.src = '/service/' + btoa(url);
 
-    // Top Bar Search
-    function navSearch() {
-        const val = document.getElementById('nav-address').value;
-        launchZenith(val);
-    }
-
-    // Main Middle Search (Fixes the broken box)
-    const mainForm = document.getElementById('sj-form');
-    if (mainForm) {
-        mainForm.onsubmit = function(e) {
-            e.preventDefault();
-            const val = document.getElementById('sj-address').value;
-            launchZenith(val);
+        frame.onload = function() {
+            try {
+                if (frame.contentDocument.title.includes("Scramjet")) {
+                    frame.contentDocument.title = "Zenith | Error";
+                }
+            } catch (e) {}
         };
     }
-</script>
 
-    const mainContent = document.getElementById('content-area');
-    const frame = document.getElementById('proxy-view');
-    
-    mainContent.style.display = 'none';
-    frame.style.display = 'block';
-    
-    // The specific service path for your proxy
-    frame.src = '/service/' + btoa(url);
+    function goHome() {
+        document.getElementById('content-area').style.display = 'flex';
+        document.getElementById('proxy-view').style.display = 'none';
+        document.getElementById('proxy-view').src = 'about:blank';
+    }
 
-    // This masks the Scramjet name if an error happens
-    frame.onload = function() {
-        try {
-            if (frame.contentDocument.title.includes("Scramjet")) {
-                frame.contentDocument.title = "Zenith | Error";
-                // You can even force the text on the page to change
-                let errorTitle = frame.contentDocument.querySelector('h1');
-                if (errorTitle) errorTitle.innerText = "Zenith | Error";
-            }
-        } catch (e) {
-            // Cross-origin might block editing the frame, 
-            // but this helps catch internal routing errors.
-        }
+    document.getElementById('sj-form').onsubmit = function(e) {
+        e.preventDefault();
+        launchZenith(document.getElementById('sj-address').value);
     };
-}
-        function goHome() {
-            document.getElementById('content-area').style.display = 'flex';
-            document.getElementById('proxy-view').style.display = 'none';
-            document.getElementById('proxy-view').src = 'about:blank';
-        }
-
-        // Connect the middle search box
-        document.getElementById('sj-form').onsubmit = function(e) {
-            e.preventDefault();
-            launchZenith(document.getElementById('sj-address').value);
-        };
-    </script>
+</script>
 </body>
 </html>
