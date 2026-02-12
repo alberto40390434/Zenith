@@ -52,21 +52,38 @@
 
     <script>
         function launchZenith(val) {
-            if (!val.trim()) return;
-            let url = val.trim();
-            if (!url.includes('.') || url.includes(' ')) {
-                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-            } else if (!url.startsWith('http')) {
-                url = 'https://' + url;
+    if (!val.trim()) return;
+    let url = val.trim();
+    if (!url.includes('.') || url.includes(' ')) {
+        url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+    } else if (!url.startsWith('http')) {
+        url = 'https://' + url;
+    }
+
+    const mainContent = document.getElementById('content-area');
+    const frame = document.getElementById('proxy-view');
+    
+    mainContent.style.display = 'none';
+    frame.style.display = 'block';
+    
+    // The specific service path for your proxy
+    frame.src = '/service/' + btoa(url);
+
+    // This masks the Scramjet name if an error happens
+    frame.onload = function() {
+        try {
+            if (frame.contentDocument.title.includes("Scramjet")) {
+                frame.contentDocument.title = "Zenith | Error";
+                // You can even force the text on the page to change
+                let errorTitle = frame.contentDocument.querySelector('h1');
+                if (errorTitle) errorTitle.innerText = "Zenith | Error";
             }
-
-            document.getElementById('content-area').style.display = 'none';
-            const frame = document.getElementById('proxy-view');
-            frame.style.display = 'block';
-            // This connects to the service without showing the Scramjet error page
-            frame.src = '/service/' + btoa(url); 
+        } catch (e) {
+            // Cross-origin might block editing the frame, 
+            // but this helps catch internal routing errors.
         }
-
+    };
+}
         function goHome() {
             document.getElementById('content-area').style.display = 'flex';
             document.getElementById('proxy-view').style.display = 'none';
