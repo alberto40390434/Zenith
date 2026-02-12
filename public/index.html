@@ -17,101 +17,67 @@
 	</head>
 
 	<body>
-		<nav class="navbar">
-			<div class="nav-left" onclick="location.reload()">
-				<img src="Zenith.png" class="nav-logo" alt="Zenith" />
-				<span class="nav-title">ZENITH</span>
-			</div>
-			
-			<div class="nav-center">
-				<form id="nav-search-form" onsubmit="event.preventDefault(); navSearch();">
-					<input id="nav-address" type="text" placeholder="Re-search..." class="nav-input" />
-				</form>
-			</div>
+    <nav class="navbar">
+        <div class="nav-left" onclick="goHome()">
+            <img src="Zenith.png" class="nav-logo">
+            <span class="nav-title">ZENITH</span>
+        </div>
+        <div class="nav-center">
+            <form onsubmit="event.preventDefault(); launchZenith(document.getElementById('nav-address').value);">
+                <input id="nav-address" type="text" placeholder="Search with Zenith..." class="nav-input">
+            </form>
+        </div>
+        <div class="nav-right">
+            <button onclick="goHome()" class="nav-btn">🏠 HOME</button>
+            <button class="nav-btn">⌨️ COMMANDS</button>
+            <button class="nav-btn">⚙️ SETTINGS</button>
+        </div>
+    </nav>
 
-			<div class="nav-right">
-				<button onclick="location.reload()" class="nav-btn">🏠 HOME</button>
-				<button class="nav-btn">⌨️ COMMANDS</button>
-				<button class="nav-btn">⚙️ SETTINGS</button>
-			</div>
-		</nav>
+    <div id="content-area">
+        <div class="flex-center logo-wrapper">
+            <img class="logo" src="Zenith.png" alt="Zenith" />
+            <h1>ZENITH | AC</h1>
+        </div>
+        <form id="sj-form" class="flex-center">
+            <input id="sj-address" type="text" placeholder="Explore the web freely..." autofocus />
+        </form>
+    </div>
 
-		<div id="content-area">
-			<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-				<img class="logo" src="Zenith.png" alt="Zenith" />
-				<h1>Zenith | AC</h1>
-			</div>
-			<div class="flex-center desc left-margin">
-				<p>
-					Scramjet is an experimental interception based web proxy designed to
-					evade internet censorship, bypass arbitrary web browser restrictions and
-					innovate web proxy technologies.
-				</p>
-			</div>
+    <iframe id="proxy-view" style="display:none; width:100%; height:calc(100vh - 45px); border:none; background:white;"></iframe>
 
-			<form id="sj-form" class="flex-center">
-				<input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-				<input id="sj-address" type="text" placeholder="Search the web freely" autofocus />
-			</form>
+    <footer>
+        <div><span>Zenith &copy; 2026</span></div>
+    </footer>
 
-			<div class="desc left-margin">
-				<p id="sj-error"></p>
-				<pre id="sj-error-code"></pre>
-			</div>
-		</div>
+    <script>
+        function launchZenith(val) {
+            if (!val.trim()) return;
+            let url = val.trim();
+            if (!url.includes('.') || url.includes(' ')) {
+                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            } else if (!url.startsWith('http')) {
+                url = 'https://' + url;
+            }
 
-		<iframe id="proxy-view" style="display:none; width:100%; height:calc(100vh - 45px); border:none; background:white;"></iframe>
-
-		<footer>
-			<div>
-				<a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop">Mercury Workshop</a>
-				<a title="The example demo app for Scramjet" href="https://github.com/MercuryWorkshop/Scramjet-Demo">GitHub</a>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Scramjet &copy; MW 2025</span>
-			</div>
-		</footer>
-
-		<script>
-    function launchZenith(val) {
-        if (!val.trim()) return;
-        
-        let url = val.trim();
-        // If it's not a direct link, search Google
-        if (!url.includes('.') || url.includes(' ')) {
-            url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-        } else if (!url.startsWith('http')) {
-            url = 'https://' + url;
-        }
-
-        // Hide the home content and show the results window
-        const mainContent = document.getElementById('content-area');
-        const frame = document.getElementById('proxy-view');
-        
-        if (mainContent) mainContent.style.display = 'none';
-        if (frame) {
+            document.getElementById('content-area').style.display = 'none';
+            const frame = document.getElementById('proxy-view');
             frame.style.display = 'block';
-            // This connects to your Scramjet service
-            frame.src = '/service/' + btoa(url);
+            // This connects to the service without showing the Scramjet error page
+            frame.src = '/service/' + btoa(url); 
         }
-    }
 
-    // Fixes the "Re-search" bar at the top
-    function navSearch() {
-        const val = document.getElementById('nav-address').value;
-        launchZenith(val);
-    }
+        function goHome() {
+            document.getElementById('content-area').style.display = 'flex';
+            document.getElementById('proxy-view').style.display = 'none';
+            document.getElementById('proxy-view').src = 'about:blank';
+        }
 
-    // Fixes the Main search box in the middle
-    const mainForm = document.getElementById('sj-form');
-    if (mainForm) {
-        mainForm.onsubmit = function(e) {
+        // Connect the middle search box
+        document.getElementById('sj-form').onsubmit = function(e) {
             e.preventDefault();
-            const val = document.getElementById('sj-address').value;
-            launchZenith(val);
+            launchZenith(document.getElementById('sj-address').value);
         };
-    }
-</script>
-	</body>
+    </script>
+</body>
 </html>
