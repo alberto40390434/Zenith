@@ -1,5 +1,10 @@
+// Register Scramjet service worker first
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', { scope: '/service/' })
+        .then(() => console.log('Scramjet service worker registered'))
+        .catch(err => console.error('Service worker registration failed:', err));
+}
 
-// Simple Scramjet initialization without modules
 window.launchZenith = async function(val) {
     if (!val || !val.trim()) return;
     let url = val.trim();
@@ -16,8 +21,7 @@ window.launchZenith = async function(val) {
     if (mainContent) mainContent.style.display = 'none';
     if (frame) {
         frame.style.display = 'block';
-        // Use standard Scramjet service path
-        frame.src = '/service/' + url;
+        frame.src = '/service/' + encodeURIComponent(url);
     }
 };
 
