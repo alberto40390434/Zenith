@@ -53,10 +53,13 @@
     <script>
         <script>
     <script>
-    // All that code goes inside here
+  <script>
+    // 1. The core function to launch a search
     function launchZenith(val) {
-        if (!val.trim()) return;
+        if (!val || !val.trim()) return;
         let url = val.trim();
+        
+        // Turn keywords into a Google search link
         if (!url.includes('.') || url.includes(' ')) {
             url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
         } else if (!url.startsWith('http')) {
@@ -66,31 +69,41 @@
         const mainContent = document.getElementById('content-area');
         const frame = document.getElementById('proxy-view');
         
-        mainContent.style.display = 'none';
-        frame.style.display = 'block';
-        
-        // This connects to your proxy engine
-        frame.src = '/service/' + btoa(url);
+        // Hide the Zenith landing page and show the web window
+        if (mainContent) mainContent.style.display = 'none';
+        if (frame) {
+            frame.style.display = 'block';
+            // Use btoa to encode the URL for Scramjet
+            frame.src = '/service/' + btoa(url);
+        }
+    }
 
-        frame.onload = function() {
-            try {
-                if (frame.contentDocument.title.includes("Scramjet")) {
-                    frame.contentDocument.title = "Zenith | Error";
+    // 2. Connect the Top "Re-search" Bar
+    function navSearch() {
+        const navInput = document.getElementById('nav-address');
+        if (navInput) {
+            launchZenith(navInput.value);
+        }
+    }
+
+    // 3. Connect the Middle Search Box when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        const mainForm = document.getElementById('sj-form');
+        if (mainForm) {
+            mainForm.onsubmit = function(e) {
+                e.preventDefault();
+                const mainInput = document.getElementById('sj-address');
+                if (mainInput) {
+                    launchZenith(mainInput.value);
                 }
-            } catch (e) {}
-        };
-    }
+            };
+        }
+    });
 
+    // 4. Simple Home Reset
     function goHome() {
-        document.getElementById('content-area').style.display = 'flex';
-        document.getElementById('proxy-view').style.display = 'none';
-        document.getElementById('proxy-view').src = 'about:blank';
+        window.location.reload();
     }
-
-    document.getElementById('sj-form').onsubmit = function(e) {
-        e.preventDefault();
-        launchZenith(document.getElementById('sj-address').value);
-    };
 </script>
 </body>
 </html>
