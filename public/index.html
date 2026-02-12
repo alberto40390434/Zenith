@@ -6,10 +6,6 @@
     <title>Zenith | AC</title>
     <link rel="stylesheet" href="index.css">
     <link rel="icon" type="image/png" href="Zenith.png">
-    <script src="/scram/scramjet.client.js"></script>
-    <script src="/scram/scramjet.codecs.js"></script>
-    <script src="/baremux/index.js"></script>
-    <script src="/scram/scramjet.config.js"></script>
 </head>
 
 	<body>
@@ -49,42 +45,43 @@
     <script>
         <script>
     <script>
-  <script>
-    // This is the main "engine" for Zenith search
-    function launchZenith(val) {
-        if (!val) return;
+  <script type="module">
+    import { ScramjetController } from "/scram/scramjet.client.js";
+
+    const controller = new ScramjetController({
+        prefix: "/scram/service/",
+        codec: "xor"
+    });
+
+    async function launchZenith(val) {
+        if (!val || !val.trim()) return;
         let url = val.trim();
         
-        // Turn "poki" into a Google link
         if (!url.includes('.') || url.includes(' ')) {
             url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
         } else if (!url.startsWith('http')) {
             url = 'https://' + url;
         }
-
+        
         const mainContent = document.getElementById('content-area');
         const frame = document.getElementById('proxy-view');
         
-        // Hide the Zenith home and show the web window
         if (mainContent) mainContent.style.display = 'none';
         if (frame) {
             frame.style.display = 'block';
-            frame.src = '/scram/service/' + encodeURIComponent(url);
+            frame.src = await controller.encodeUrl(url);
         }
     }
 
-    // Connect everything once the page is ready
-    document.addEventListener('DOMContentLoaded', () => {
-        // 1. Connect the Top Bar (nav-address)
-        const topForm = document.querySelector('.nav-center form');
+    window.addEventListener('DOMContentLoaded', () => {
+        const topForm = document.getElementById('nav-form');
         if (topForm) {
             topForm.onsubmit = (e) => {
                 e.preventDefault();
                 launchZenith(document.getElementById('nav-address').value);
             };
         }
-
-        // 2. Connect the Middle Box (sj-form)
+        
         const middleForm = document.getElementById('sj-form');
         if (middleForm) {
             middleForm.onsubmit = (e) => {
@@ -94,9 +91,9 @@
         }
     });
 
-    function goHome() {
+    window.goHome = function() {
         window.location.reload();
-    }
+    };
 </script>
 </body>
 </html>
