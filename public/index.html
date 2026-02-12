@@ -54,11 +54,21 @@
         function launchZenith(val) {
     if (!val.trim()) return;
     let url = val.trim();
+    
+    // This turns "poki" into a real Google search link
     if (!url.includes('.') || url.includes(' ')) {
         url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
     } else if (!url.startsWith('http')) {
         url = 'https://' + url;
     }
+
+    document.getElementById('content-area').style.display = 'none';
+    const frame = document.getElementById('proxy-view');
+    frame.style.display = 'block';
+    
+    // This MUST stay as /service/ for the engine to work
+    frame.src = '/service/' + btoa(url); 
+}
 
     const mainContent = document.getElementById('content-area');
     const frame = document.getElementById('proxy-view');
