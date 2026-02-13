@@ -908,12 +908,7 @@
 			</div>
 			<div class="desc">
 				<p>
-					Zenith is a newly designed web Pr0xy designed to
-					evade internet censorship, bypass arbitrary web browser restrictions and
-					innovate web proxy technologies. Using this proxy, if you ever get caught 
-					using I will not be responsible. Keep this in mind when browsing. G@mes,
-					@pps, and more will be added soon as Zenith improves. Stay
-					safe and have fun everyone.
+					Zenith is a newly designed web Pr0xy designed to evade internet censorship, bypass arbitrary web browser restrictions and innovate web proxy technologies. Using this proxy, if you ever get caught using I will not be responsible. Keep this in mind when browsing. G@mes, @pps, and more will be added soon as Zenith improves. Stay safe and have fun everyone.
 				</p>
 			</div>
 			<form id="sj-form">
@@ -1014,22 +1009,43 @@
 			let tabs = [];
 			let activeTabId = null;
 			let tabIdCounter = 0;
+			let homeTabId = null;
+			
+			function createHomeTab() {
+				const tabId = ++tabIdCounter;
+				homeTabId = tabId;
+				
+				const tab = {
+					id: tabId,
+					url: 'home',
+					title: '🏠 Home',
+					isHome: true,
+					iframe: null
+				};
+				tabs.push(tab);
+				
+				renderTabs();
+				switchToTab(tabId);
+				return tab;
+			}
 			
 			function createTab(url, title) {
 				const tabId = ++tabIdCounter;
 				const tab = {
 					id: tabId,
 					url: url,
-					title: title || 'New Tab',
-					iframe: null
+					title: title || 'Loading...',
+					iframe: null,
+					isHome: false
 				};
 				tabs.push(tab);
 				
 				// Create iframe for this tab
 				const iframe = document.createElement('iframe');
 				iframe.id = 'tab-frame-' + tabId;
-				iframe.style.cssText = 'position:fixed;top:45px;left:0;width:100%;height:calc(100vh - 45px);border:none;z-index:9000;display:none;';
-				iframe.src = url;
+				iframe.style.cssText = 'position:fixed;top:45px;left:0;width:100%;height:calc(100vh - 45px);border:none;z-index:9000;display:none;background:#1a1a1a;';
+				
+				// Don't set src yet - this prevents the error flash
 				document.body.appendChild(iframe);
 				tab.iframe = iframe;
 				
@@ -1037,14 +1053,23 @@
 				iframe.onload = function() {
 					try {
 						const pageTitle = iframe.contentWindow.document.title;
-						if (pageTitle) {
+						if (pageTitle && pageTitle !== '') {
 							tab.title = pageTitle;
-							renderTabs();
+						} else {
+							tab.title = 'Untitled';
 						}
+						renderTabs();
 					} catch(e) {
-						// Cross-origin, can't get title
+						// Cross-origin, use URL as title
+						tab.title = url.replace('/service/', '').substring(0, 30);
+						renderTabs();
 					}
 				};
+				
+				// Set src after a tiny delay to prevent error flash
+				setTimeout(() => {
+					iframe.src = url;
+				}, 10);
 				
 				renderTabs();
 				switchToTab(tabId);
@@ -1054,39 +1079,68 @@
 			function switchToTab(tabId) {
 				activeTabId = tabId;
 				
-				// Hide all iframes
-				tabs.forEach(tab => {
-					if (tab.iframe) {
-						tab.iframe.style.display = 'none';
-					}
-				});
-				
-				// Show active iframe
 				const activeTab = tabs.find(t => t.id === tabId);
-				if (activeTab && activeTab.iframe) {
-					activeTab.iframe.style.display = 'block';
+				const homeContent = document.querySelector('body > div[style*="max-width"]');
+				const footer = document.querySelector('footer');
+				const navbar = document.getElementById('zenith-navbar');
+				
+				// Always show navbar when tabs exist
+				if (navbar && tabs.length > 0) {
+					navbar.style.display = 'flex';
+				}
+				
+				if (activeTab && activeTab.isHome) {
+					// Show home screen
+					tabs.forEach(tab => {
+						if (tab.iframe) tab.iframe.style.display = 'none';
+					});
+					if (homeContent) homeContent.style.display = 'block';
+					if (footer) footer.style.display = 'block';
+					document.body.classList.add('browsing');
+				} else {
+					// Hide home, show iframes
+					if (homeContent) homeContent.style.display = 'none';
+					if (footer) footer.style.display = 'none';
+					
+					tabs.forEach(tab => {
+						if (tab.iframe) {
+							tab.iframe.style.display = 'none';
+						}
+					});
+					
+					// Show active iframe
+					if (activeTab && activeTab.iframe) {
+						activeTab.iframe.style.display = 'block';
+					}
+					document.body.classList.add('browsing');
 				}
 				
 				renderTabs();
 			}
 			
 			function closeTab(tabId) {
+				// Can't close home tab
+				const tab = tabs.find(t => t.id === tabId);
+				if (tab && tab.isHome) return;
+				
 				const tabIndex = tabs.findIndex(t => t.id === tabId);
 				if (tabIndex === -1) return;
 				
-				const tab = tabs[tabIndex];
-				if (tab.iframe) {
-					tab.iframe.remove();
+				const closedTab = tabs[tabIndex];
+				if (closedTab.iframe) {
+					closedTab.iframe.remove();
 				}
 				
 				tabs.splice(tabIndex, 1);
 				
-				if (tabs.length === 0) {
-					window.zenithGoHome();
-				} else if (activeTabId === tabId) {
-					// Switch to next tab or previous
-					const newActiveTab = tabs[tabIndex] || tabs[tabIndex - 1];
-					switchToTab(newActiveTab.id);
+				if (activeTabId === tabId) {
+					// Switch to home tab or next tab
+					if (homeTabId) {
+						switchToTab(homeTabId);
+					} else if (tabs.length > 0) {
+						const newActiveTab = tabs[tabIndex] || tabs[tabIndex - 1];
+						switchToTab(newActiveTab.id);
+					}
 				} else {
 					renderTabs();
 				}
@@ -1099,9 +1153,12 @@
 				tabs.forEach(tab => {
 					const tabEl = document.createElement('div');
 					tabEl.className = 'nav-tab' + (tab.id === activeTabId ? ' active' : '');
+					
+					const closeBtn = tab.isHome ? '' : `<button class="nav-tab-close" onclick="event.stopPropagation(); window.closeTab(${tab.id})">×</button>`;
+					
 					tabEl.innerHTML = `
 						<span class="nav-tab-title">${tab.title}</span>
-						<button class="nav-tab-close" onclick="event.stopPropagation(); window.closeTab(${tab.id})">×</button>
+						${closeBtn}
 					`;
 					tabEl.onclick = () => switchToTab(tab.id);
 					tabsContainer.appendChild(tabEl);
@@ -1109,7 +1166,13 @@
 			}
 			
 			window.addNewTab = function() {
-				createTab('/service/' + encodeURIComponent('https://www.google.com'), 'Google');
+				// Create home tab if it doesn't exist
+				if (!homeTabId || !tabs.find(t => t.id === homeTabId)) {
+					createHomeTab();
+				}
+				
+				// Create new empty tab that shows home screen
+				createHomeTab();
 			};
 			
 			window.closeTab = closeTab;
@@ -1127,24 +1190,30 @@
 			};
 			
 			window.zenithGoHome = function() {
-				// Close all tabs
-				tabs.forEach(tab => {
-					if (tab.iframe) tab.iframe.remove();
-				});
-				tabs = [];
-				activeTabId = null;
-				renderTabs();
-				
-				// Hide navbar and show home
-				const navbar = document.getElementById('zenith-navbar');
-				const homeContent = document.querySelector('body > div[style*="max-width"]');
-				const footer = document.querySelector('footer');
-				
-				if (navbar) navbar.style.display = 'none';
-				if (homeContent) homeContent.style.display = 'block';
-				if (footer) footer.style.display = 'block';
-				
-				document.body.classList.remove('browsing');
+				// If we're browsing, switch to home tab. If no tabs, go to actual home
+				if (homeTabId && tabs.find(t => t.id === homeTabId)) {
+					switchToTab(homeTabId);
+				} else {
+					// Close all tabs
+					tabs.forEach(tab => {
+						if (tab.iframe) tab.iframe.remove();
+					});
+					tabs = [];
+					activeTabId = null;
+					homeTabId = null;
+					renderTabs();
+					
+					// Hide navbar and show home
+					const navbar = document.getElementById('zenith-navbar');
+					const homeContent = document.querySelector('body > div[style*="max-width"]');
+					const footer = document.querySelector('footer');
+					
+					if (navbar) navbar.style.display = 'none';
+					if (homeContent) homeContent.style.display = 'block';
+					if (footer) footer.style.display = 'block';
+					
+					document.body.classList.remove('browsing');
+				}
 			};
 			
 			// Override the main search form to create tabs
@@ -1164,17 +1233,17 @@
 							url = 'https://' + url;
 						}
 						
-						// Create tab
+						// Create home tab if it doesn't exist
+						if (!homeTabId || !tabs.find(t => t.id === homeTabId)) {
+							createHomeTab();
+						}
+						
+						// Create new tab with URL
 						createTab('/service/' + encodeURIComponent(url), url);
 						
 						// Show navbar
 						const navbar = document.getElementById('zenith-navbar');
-						const homeContent = document.querySelector('body > div[style*="max-width"]');
-						const footer = document.querySelector('footer');
-						
 						if (navbar) navbar.style.display = 'flex';
-						if (homeContent) homeContent.style.display = 'none';
-						if (footer) footer.style.display = 'none';
 						
 						document.body.classList.add('browsing');
 					});
