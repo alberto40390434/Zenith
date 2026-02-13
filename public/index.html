@@ -248,6 +248,250 @@
 				margin: 4px 0;
 			}
 			
+			/* Light mode styles */
+			body.light-mode {
+				background-color: #f5f5f5 !important;
+				color: #000 !important;
+			}
+			
+			body.light-mode .zenith-navbar {
+				background: #fff;
+				border-bottom: 1px solid #e0e0e0;
+			}
+			
+			body.light-mode .nav-title,
+			body.light-mode .nav-btn,
+			body.light-mode .nav-menu-btn {
+				color: #333;
+			}
+			
+			body.light-mode .nav-input {
+				background: #f0f0f0;
+				border-color: #ddd;
+				color: #000;
+			}
+			
+			body.light-mode #sj-address {
+				background: #f0f0f0;
+				border-color: #ddd;
+				color: #000;
+			}
+			
+			body.light-mode .desc p {
+				color: #555;
+			}
+			
+			body.light-mode .nav-menu-dropdown {
+				background: #fff;
+				border-color: #ddd;
+			}
+			
+			body.light-mode .nav-menu-item {
+				color: #333;
+			}
+			
+			body.light-mode .nav-menu-item:hover {
+				background: #f0f0f0;
+			}
+			
+			/* Custom Inspect Element Modal */
+			.inspect-modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,0.8);
+				display: none;
+				z-index: 10002;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.inspect-modal.show {
+				display: flex;
+			}
+			
+			.inspect-content {
+				background: #1a1a1a;
+				border: 1px solid #333;
+				border-radius: 8px;
+				width: 90%;
+				height: 80%;
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.inspect-header {
+				padding: 15px 20px;
+				border-bottom: 1px solid #333;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			
+			.inspect-header h3 {
+				color: white;
+				margin: 0;
+			}
+			
+			.inspect-close {
+				background: transparent;
+				border: none;
+				color: #888;
+				font-size: 24px;
+				cursor: pointer;
+			}
+			
+			.inspect-close:hover {
+				color: white;
+			}
+			
+			.inspect-body {
+				flex: 1;
+				overflow: auto;
+				padding: 20px;
+			}
+			
+			.inspect-code {
+				background: #0a0a0a;
+				border: 1px solid #333;
+				border-radius: 4px;
+				padding: 15px;
+				color: #0f0;
+				font-family: 'Courier New', monospace;
+				font-size: 12px;
+				white-space: pre-wrap;
+				overflow: auto;
+				max-height: 100%;
+			}
+			
+			/* Settings Modal */
+			.settings-modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,0.8);
+				display: none;
+				z-index: 10002;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.settings-modal.show {
+				display: flex;
+			}
+			
+			.settings-content {
+				background: #1a1a1a;
+				border: 1px solid #333;
+				border-radius: 8px;
+				width: 600px;
+				max-width: 90%;
+				max-height: 80%;
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.settings-header {
+				padding: 20px;
+				border-bottom: 1px solid #333;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			
+			.settings-header h2 {
+				color: white;
+				margin: 0;
+			}
+			
+			.settings-close {
+				background: transparent;
+				border: none;
+				color: #888;
+				font-size: 24px;
+				cursor: pointer;
+			}
+			
+			.settings-close:hover {
+				color: white;
+			}
+			
+			.settings-body {
+				flex: 1;
+				overflow: auto;
+				padding: 20px;
+			}
+			
+			.settings-section {
+				margin-bottom: 30px;
+			}
+			
+			.settings-section h3 {
+				color: white;
+				font-size: 16px;
+				margin-bottom: 15px;
+			}
+			
+			.settings-option {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 12px 0;
+				border-bottom: 1px solid #2a2a2a;
+			}
+			
+			.settings-option:last-child {
+				border-bottom: none;
+			}
+			
+			.settings-label {
+				color: #ccc;
+				font-size: 14px;
+			}
+			
+			.settings-toggle {
+				width: 50px;
+				height: 26px;
+				background: #333;
+				border-radius: 13px;
+				position: relative;
+				cursor: pointer;
+				transition: background 0.3s;
+			}
+			
+			.settings-toggle.active {
+				background: #4CAF50;
+			}
+			
+			.settings-toggle-slider {
+				width: 22px;
+				height: 22px;
+				background: white;
+				border-radius: 50%;
+				position: absolute;
+				top: 2px;
+				left: 2px;
+				transition: left 0.3s;
+			}
+			
+			.settings-toggle.active .settings-toggle-slider {
+				left: 26px;
+			}
+			
+			.settings-input {
+				background: #0a0a0a;
+				border: 1px solid #333;
+				border-radius: 4px;
+				padding: 8px 12px;
+				color: white;
+				font-size: 14px;
+				width: 200px;
+			}
+			
 			/* Adjust iframe when navbar is visible */
 			#sj-frame {
 				position: fixed !important;
@@ -338,6 +582,80 @@
 				<pre id="sj-error-code"></pre>
 			</div>
 		</div>
+		
+		<!-- Custom Inspect Element Modal -->
+		<div id="inspect-modal" class="inspect-modal">
+			<div class="inspect-content">
+				<div class="inspect-header">
+					<h3>🔍 Inspect Element</h3>
+					<button class="inspect-close" onclick="window.closeInspect()">×</button>
+				</div>
+				<div class="inspect-body">
+					<div class="inspect-code" id="inspect-code">Loading...</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Settings Modal -->
+		<div id="settings-modal" class="settings-modal">
+			<div class="settings-content">
+				<div class="settings-header">
+					<h2>⚙️ Settings</h2>
+					<button class="settings-close" onclick="window.closeSettings()">×</button>
+				</div>
+				<div class="settings-body">
+					<div class="settings-section">
+						<h3>Appearance</h3>
+						<div class="settings-option">
+							<span class="settings-label">Dark Mode</span>
+							<div class="settings-toggle active" id="dark-mode-toggle" onclick="window.toggleDarkMode()">
+								<div class="settings-toggle-slider"></div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="settings-section">
+						<h3>Search Engine</h3>
+						<div class="settings-option">
+							<span class="settings-label">Default Search</span>
+							<select class="settings-input" id="search-engine-select">
+								<option value="https://www.google.com/search?q=%s">Google</option>
+								<option value="https://www.bing.com/search?q=%s">Bing</option>
+								<option value="https://duckduckgo.com/?q=%s">DuckDuckGo</option>
+								<option value="https://search.brave.com/search?q=%s">Brave</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="settings-section">
+						<h3>Privacy</h3>
+						<div class="settings-option">
+							<span class="settings-label">About:Blank Cloaking</span>
+							<div class="settings-toggle" id="ab-cloak-toggle" onclick="window.toggleAbCloak()">
+								<div class="settings-toggle-slider"></div>
+							</div>
+						</div>
+						<div class="settings-option">
+							<span class="settings-label">Panic URL</span>
+							<input type="text" class="settings-input" id="panic-url" value="https://www.google.com" placeholder="https://...">
+						</div>
+					</div>
+					
+					<div class="settings-section">
+						<h3>Advanced</h3>
+						<div class="settings-option">
+							<span class="settings-label">Custom Tab Title</span>
+							<input type="text" class="settings-input" id="tab-title" placeholder="Zenith | AC">
+						</div>
+						<div class="settings-option">
+							<span class="settings-label">Custom Favicon URL</span>
+							<input type="text" class="settings-input" id="favicon-url" placeholder="https://...">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<footer>
 			<div>
 				<span>Zenith &copy; 2026</span>
@@ -396,25 +714,127 @@
 				}
 			};
 			
+			// Custom Inspect Element
 			window.inspectElement = function() {
-				alert('Inspect Element: Press F12 or right-click and select "Inspect"');
+				const modal = document.getElementById('inspect-modal');
+				const codeEl = document.getElementById('inspect-code');
+				const frame = document.getElementById('sj-frame');
+				
+				if (frame && frame.contentWindow) {
+					try {
+						const html = frame.contentWindow.document.documentElement.outerHTML;
+						codeEl.textContent = html;
+					} catch(e) {
+						codeEl.textContent = 'Cannot inspect: Cross-origin frame\n\nError: ' + e.message;
+					}
+				} else {
+					codeEl.textContent = '<!-- No page loaded -->';
+				}
+				
+				modal.classList.add('show');
 			};
 			
+			window.closeInspect = function() {
+				document.getElementById('inspect-modal').classList.remove('show');
+			};
+			
+			// Dark/Light Mode Toggle
 			window.toggleDarkMode = function() {
-				alert('Dark mode is already enabled!');
+				const body = document.body;
+				const toggle = document.getElementById('dark-mode-toggle');
+				
+				body.classList.toggle('light-mode');
+				toggle.classList.toggle('active');
+				
+				// Save preference
+				localStorage.setItem('zenith-theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+			};
+			
+			// Load saved theme on startup
+			window.addEventListener('load', function() {
+				const savedTheme = localStorage.getItem('zenith-theme');
+				if (savedTheme === 'light') {
+					document.body.classList.add('light-mode');
+					const toggle = document.getElementById('dark-mode-toggle');
+					if (toggle) toggle.classList.remove('active');
+				}
+			});
+			
+			// About:Blank Cloaking
+			let abCloakEnabled = localStorage.getItem('ab-cloak') === 'true';
+			
+			window.toggleAbCloak = function() {
+				abCloakEnabled = !abCloakEnabled;
+				localStorage.setItem('ab-cloak', abCloakEnabled);
+				const toggle = document.getElementById('ab-cloak-toggle');
+				if (toggle) {
+					toggle.classList.toggle('active', abCloakEnabled);
+				}
+				
+				if (abCloakEnabled) {
+					window.toggleAboutBlank();
+				}
 			};
 			
 			window.toggleAboutBlank = function() {
 				const win = window.open();
 				win.document.body.innerHTML = `<iframe src="${window.location.href}" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;"></iframe>`;
+				window.close();
 			};
 			
 			window.panicMode = function() {
-				window.location.href = 'https://www.google.com';
+				const panicUrl = document.getElementById('panic-url')?.value || 'https://www.google.com';
+				window.location.href = panicUrl;
 			};
 			
+			// Settings Modal
 			window.openSettings = function() {
-				alert('Settings panel coming soon!');
+				const modal = document.getElementById('settings-modal');
+				modal.classList.add('show');
+				
+				// Load saved settings
+				const searchEngine = localStorage.getItem('search-engine') || 'https://www.google.com/search?q=%s';
+				const panicUrl = localStorage.getItem('panic-url') || 'https://www.google.com';
+				const tabTitle = localStorage.getItem('tab-title') || '';
+				const faviconUrl = localStorage.getItem('favicon-url') || '';
+				
+				document.getElementById('search-engine-select').value = searchEngine;
+				document.getElementById('panic-url').value = panicUrl;
+				document.getElementById('tab-title').value = tabTitle;
+				document.getElementById('favicon-url').value = faviconUrl;
+				
+				const abToggle = document.getElementById('ab-cloak-toggle');
+				if (abToggle) {
+					abToggle.classList.toggle('active', abCloakEnabled);
+				}
+			};
+			
+			window.closeSettings = function() {
+				document.getElementById('settings-modal').classList.remove('show');
+				
+				// Save settings
+				localStorage.setItem('search-engine', document.getElementById('search-engine-select').value);
+				localStorage.setItem('panic-url', document.getElementById('panic-url').value);
+				localStorage.setItem('tab-title', document.getElementById('tab-title').value);
+				localStorage.setItem('favicon-url', document.getElementById('favicon-url').value);
+				
+				// Apply settings
+				const tabTitle = document.getElementById('tab-title').value;
+				if (tabTitle) document.title = tabTitle;
+				
+				const faviconUrl = document.getElementById('favicon-url').value;
+				if (faviconUrl) {
+					const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+					link.type = 'image/x-icon';
+					link.rel = 'shortcut icon';
+					link.href = faviconUrl;
+					document.getElementsByTagName('head')[0].appendChild(link);
+				}
+				
+				// Update search engine
+				const searchEngine = document.getElementById('search-engine-select').value;
+				const searchInput = document.getElementById('sj-search-engine');
+				if (searchInput) searchInput.value = searchEngine;
 			};
 			
 			// Show navbar when iframe becomes visible, hide home content
