@@ -43,15 +43,14 @@
 			body::before {
 				content: '';
 				position: fixed;
-				top: -50%;
-				left: -50%;
-				width: 200%;
-				height: 200%;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
 				background: 
 					radial-gradient(circle at 30% 50%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
 					radial-gradient(circle at 70% 50%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
 					radial-gradient(circle at 50% 30%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
-				animation: rotate 30s linear infinite;
 				z-index: -3;
 			}
 			
@@ -138,11 +137,6 @@
 				animation-delay: -5s;
 				animation-duration: 22s;
 				filter: blur(1px);
-			}
-			
-			@keyframes rotate {
-				0% { transform: rotate(0deg); }
-				100% { transform: rotate(360deg); }
 			}
 			
 			@keyframes waveMove {
@@ -362,6 +356,90 @@
 			
 			.zenith-navbar.visible {
 				display: flex;
+			}
+			
+			/* Tab system */
+			.nav-tabs {
+				display: flex;
+				gap: 5px;
+				flex: 1;
+				max-width: 600px;
+				overflow-x: auto;
+				overflow-y: hidden;
+				align-items: center;
+			}
+			
+			.nav-tabs::-webkit-scrollbar {
+				height: 0;
+			}
+			
+			.nav-tab {
+				background: #1a1a1a;
+				border: 1px solid #2a2a2a;
+				border-radius: 8px 8px 0 0;
+				padding: 8px 15px;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				cursor: pointer;
+				min-width: 150px;
+				max-width: 200px;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			
+			.nav-tab:hover {
+				background: #2a2a2a;
+			}
+			
+			.nav-tab.active {
+				background: #2a2a2a;
+				border-bottom-color: #2a2a2a;
+			}
+			
+			.nav-tab-title {
+				flex: 1;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				color: #ccc;
+				font-size: 13px;
+			}
+			
+			.nav-tab.active .nav-tab-title {
+				color: white;
+			}
+			
+			.nav-tab-close {
+				background: transparent;
+				border: none;
+				color: #666;
+				cursor: pointer;
+				padding: 0;
+				font-size: 16px;
+				width: 16px;
+				height: 16px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.nav-tab-close:hover {
+				color: white;
+				background: #444;
+				border-radius: 3px;
+			}
+			
+			.nav-new-tab {
+				background: transparent;
+				border: none;
+				color: #888;
+				cursor: pointer;
+				font-size: 20px;
+				padding: 5px 10px;
+			}
+			
+			.nav-new-tab:hover {
+				color: white;
 			}
 			
 			.nav-left { 
@@ -780,11 +858,13 @@
 				<img src="Zenith.png" class="nav-logo" alt="Zenith">
 				<span class="nav-title">ZENITH</span>
 			</div>
-			<div class="nav-center">
-				<form id="nav-form" onsubmit="return window.zenithNavSearch(event)">
-					<input id="nav-address" type="text" placeholder="Search with Zenith..." class="nav-input">
-				</form>
+			
+			<!-- Tab system -->
+			<div class="nav-tabs" id="nav-tabs">
+				<!-- Tabs will be added dynamically -->
 			</div>
+			<button class="nav-new-tab" onclick="window.addNewTab()" title="New tab">+</button>
+			
 			<div class="nav-right">
 				<button onclick="window.zenithGoHome()" class="nav-btn" type="button">🏠 HOME</button>
 				<button onclick="window.toggleNavMenu()" class="nav-menu-btn" type="button">☰</button>
@@ -927,6 +1007,110 @@
 		</footer>
 		
 		<script>
+			// Tab management system
+			let tabs = [];
+			let activeTabId = null;
+			let tabIdCounter = 0;
+			
+			function createTab(url, title) {
+				const tabId = ++tabIdCounter;
+				const tab = {
+					id: tabId,
+					url: url,
+					title: title || 'New Tab',
+					iframe: null
+				};
+				tabs.push(tab);
+				
+				// Create iframe for this tab
+				const iframe = document.createElement('iframe');
+				iframe.id = 'tab-frame-' + tabId;
+				iframe.style.cssText = 'position:fixed;top:45px;left:0;width:100%;height:calc(100vh - 45px);border:none;z-index:9000;display:none;';
+				iframe.src = url;
+				document.body.appendChild(iframe);
+				tab.iframe = iframe;
+				
+				// Update tab title when page loads
+				iframe.onload = function() {
+					try {
+						const pageTitle = iframe.contentWindow.document.title;
+						if (pageTitle) {
+							tab.title = pageTitle;
+							renderTabs();
+						}
+					} catch(e) {
+						// Cross-origin, can't get title
+					}
+				};
+				
+				renderTabs();
+				switchToTab(tabId);
+				return tab;
+			}
+			
+			function switchToTab(tabId) {
+				activeTabId = tabId;
+				
+				// Hide all iframes
+				tabs.forEach(tab => {
+					if (tab.iframe) {
+						tab.iframe.style.display = 'none';
+					}
+				});
+				
+				// Show active iframe
+				const activeTab = tabs.find(t => t.id === tabId);
+				if (activeTab && activeTab.iframe) {
+					activeTab.iframe.style.display = 'block';
+				}
+				
+				renderTabs();
+			}
+			
+			function closeTab(tabId) {
+				const tabIndex = tabs.findIndex(t => t.id === tabId);
+				if (tabIndex === -1) return;
+				
+				const tab = tabs[tabIndex];
+				if (tab.iframe) {
+					tab.iframe.remove();
+				}
+				
+				tabs.splice(tabIndex, 1);
+				
+				if (tabs.length === 0) {
+					window.zenithGoHome();
+				} else if (activeTabId === tabId) {
+					// Switch to next tab or previous
+					const newActiveTab = tabs[tabIndex] || tabs[tabIndex - 1];
+					switchToTab(newActiveTab.id);
+				} else {
+					renderTabs();
+				}
+			}
+			
+			function renderTabs() {
+				const tabsContainer = document.getElementById('nav-tabs');
+				tabsContainer.innerHTML = '';
+				
+				tabs.forEach(tab => {
+					const tabEl = document.createElement('div');
+					tabEl.className = 'nav-tab' + (tab.id === activeTabId ? ' active' : '');
+					tabEl.innerHTML = `
+						<span class="nav-tab-title">${tab.title}</span>
+						<button class="nav-tab-close" onclick="event.stopPropagation(); window.closeTab(${tab.id})">×</button>
+					`;
+					tabEl.onclick = () => switchToTab(tab.id);
+					tabsContainer.appendChild(tabEl);
+				});
+			}
+			
+			window.addNewTab = function() {
+				createTab('/service/' + encodeURIComponent('https://www.google.com'), 'Google');
+			};
+			
+			window.closeTab = closeTab;
+			
 			// Navbar functionality - doesn't interfere with Scramjet
 			window.zenithNavSearch = function(event) {
 				event.preventDefault();
@@ -940,8 +1124,59 @@
 			};
 			
 			window.zenithGoHome = function() {
-				location.reload();
+				// Close all tabs
+				tabs.forEach(tab => {
+					if (tab.iframe) tab.iframe.remove();
+				});
+				tabs = [];
+				activeTabId = null;
+				renderTabs();
+				
+				// Hide navbar and show home
+				const navbar = document.getElementById('zenith-navbar');
+				const homeContent = document.querySelector('body > div[style*="max-width"]');
+				const footer = document.querySelector('footer');
+				
+				if (navbar) navbar.style.display = 'none';
+				if (homeContent) homeContent.style.display = 'block';
+				if (footer) footer.style.display = 'block';
+				
+				document.body.classList.remove('browsing');
 			};
+			
+			// Override the main search form to create tabs
+			document.addEventListener('DOMContentLoaded', () => {
+				const mainForm = document.getElementById('sj-form');
+				if (mainForm) {
+					mainForm.addEventListener('submit', (e) => {
+						e.preventDefault();
+						const input = document.getElementById('sj-address');
+						if (!input.value.trim()) return;
+						
+						let url = input.value.trim();
+						if (!url.includes('.') || url.includes(' ')) {
+							const searchEngine = document.getElementById('sj-search-engine')?.value || 'https://www.google.com/search?q=%s';
+							url = searchEngine.replace('%s', encodeURIComponent(url));
+						} else if (!url.startsWith('http')) {
+							url = 'https://' + url;
+						}
+						
+						// Create tab
+						createTab('/service/' + encodeURIComponent(url), url);
+						
+						// Show navbar
+						const navbar = document.getElementById('zenith-navbar');
+						const homeContent = document.querySelector('body > div[style*="max-width"]');
+						const footer = document.querySelector('footer');
+						
+						if (navbar) navbar.style.display = 'flex';
+						if (homeContent) homeContent.style.display = 'none';
+						if (footer) footer.style.display = 'none';
+						
+						document.body.classList.add('browsing');
+					});
+				}
+			});
 			
 			// Toggle hamburger menu
 			window.toggleNavMenu = function() {
@@ -960,7 +1195,7 @@
 			
 			// Menu functions (basic implementations)
 			window.openNewTab = function() {
-				window.open(window.location.href, '_blank');
+				addNewTab();
 			};
 			
 			window.toggleFullscreen = function() {
@@ -1064,13 +1299,40 @@
 				body.classList.toggle('light-mode');
 				toggle.classList.toggle('active');
 				
-				// Change iframe background color
+				// Change iframe background and inject styles
 				const frame = document.getElementById('sj-frame');
 				if (frame) {
-					if (body.classList.contains('light-mode')) {
+					const isLightMode = body.classList.contains('light-mode');
+					
+					if (isLightMode) {
 						frame.style.background = 'white';
 					} else {
 						frame.style.background = '#1a1a1a';
+					}
+					
+					// Try to inject dark mode styles into the iframe
+					try {
+						const iframeDoc = frame.contentWindow.document;
+						let styleEl = iframeDoc.getElementById('zenith-dark-mode');
+						
+						if (!isLightMode && !styleEl) {
+							// Add dark mode styles
+							styleEl = iframeDoc.createElement('style');
+							styleEl.id = 'zenith-dark-mode';
+							styleEl.textContent = `
+								body { background-color: #1a1a1a !important; color: #e0e0e0 !important; }
+								* { background-color: inherit; }
+								input, textarea, select { background-color: #2a2a2a !important; color: white !important; border-color: #444 !important; }
+								a { color: #4d9fff !important; }
+							`;
+							iframeDoc.head.appendChild(styleEl);
+						} else if (isLightMode && styleEl) {
+							// Remove dark mode styles
+							styleEl.remove();
+						}
+					} catch(e) {
+						// Cross-origin iframe, can't inject styles
+						console.log('Cannot inject styles into cross-origin iframe');
 					}
 				}
 				
