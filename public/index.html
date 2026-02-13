@@ -186,6 +186,68 @@
 				color: white; 
 			}
 			
+			/* Hamburger menu */
+			.nav-menu-btn {
+				background: transparent;
+				border: none;
+				color: #888;
+				cursor: pointer;
+				font-size: 20px;
+				padding: 5px 10px;
+				margin-left: 10px;
+			}
+			
+			.nav-menu-btn:hover {
+				color: white;
+			}
+			
+			.nav-menu-dropdown {
+				position: absolute;
+				top: 45px;
+				right: 20px;
+				background: #1a1a1a;
+				border: 1px solid #333;
+				border-radius: 8px;
+				padding: 8px 0;
+				min-width: 220px;
+				display: none;
+				z-index: 10001;
+			}
+			
+			.nav-menu-dropdown.show {
+				display: block;
+			}
+			
+			.nav-menu-item {
+				display: flex;
+				align-items: center;
+				padding: 12px 16px;
+				color: #ccc;
+				cursor: pointer;
+				font-size: 14px;
+				border: none;
+				background: transparent;
+				width: 100%;
+				text-align: left;
+			}
+			
+			.nav-menu-item:hover {
+				background: #2a2a2a;
+				color: white;
+			}
+			
+			.nav-menu-item svg {
+				margin-right: 12px;
+				width: 18px;
+				height: 18px;
+			}
+			
+			.nav-menu-separator {
+				height: 1px;
+				background: #333;
+				margin: 4px 0;
+			}
+			
 			/* Adjust iframe when navbar is visible */
 			#sj-frame {
 				position: fixed !important;
@@ -217,6 +279,37 @@
 			</div>
 			<div class="nav-right">
 				<button onclick="window.zenithGoHome()" class="nav-btn" type="button">🏠 HOME</button>
+				<button onclick="window.toggleNavMenu()" class="nav-menu-btn" type="button">☰</button>
+			</div>
+			
+			<!-- Dropdown menu -->
+			<div id="nav-menu-dropdown" class="nav-menu-dropdown">
+				<button class="nav-menu-item" onclick="window.openNewTab()">
+					<span>➕ New tab (Ctrl+Alt+N)</span>
+				</button>
+				<button class="nav-menu-item" onclick="window.toggleFullscreen()">
+					<span>⛶ Full Screen (Ctrl+Alt+Z)</span>
+				</button>
+				<button class="nav-menu-item" onclick="window.reloadPage()">
+					<span>↻ Reload (Ctrl+Alt+R)</span>
+				</button>
+				<button class="nav-menu-item" onclick="window.inspectElement()">
+					<span>⚙ Inspect Element (Ctrl+Alt+I)</span>
+				</button>
+				<div class="nav-menu-separator"></div>
+				<button class="nav-menu-item" onclick="window.toggleDarkMode()">
+					<span>🌙 Dark Mode (Ctrl+Alt+X)</span>
+				</button>
+				<button class="nav-menu-item" onclick="window.toggleAboutBlank()">
+					<span>🔒 AB Cloak (Ctrl+Alt+C)</span>
+				</button>
+				<button class="nav-menu-item" onclick="window.panicMode()">
+					<span>⚠ Panic ()</span>
+				</button>
+				<div class="nav-menu-separator"></div>
+				<button class="nav-menu-item" onclick="window.openSettings()">
+					<span>⚙ Settings (Ctrl+.)</span>
+				</button>
 			</div>
 		</nav>
 	
@@ -266,6 +359,62 @@
 			
 			window.zenithGoHome = function() {
 				location.reload();
+			};
+			
+			// Toggle hamburger menu
+			window.toggleNavMenu = function() {
+				const dropdown = document.getElementById('nav-menu-dropdown');
+				dropdown.classList.toggle('show');
+			};
+			
+			// Close menu when clicking outside
+			document.addEventListener('click', function(event) {
+				const dropdown = document.getElementById('nav-menu-dropdown');
+				const menuBtn = event.target.closest('.nav-menu-btn');
+				if (!menuBtn && !event.target.closest('.nav-menu-dropdown')) {
+					dropdown.classList.remove('show');
+				}
+			});
+			
+			// Menu functions (basic implementations)
+			window.openNewTab = function() {
+				window.open(window.location.href, '_blank');
+			};
+			
+			window.toggleFullscreen = function() {
+				if (!document.fullscreenElement) {
+					document.documentElement.requestFullscreen();
+				} else {
+					document.exitFullscreen();
+				}
+			};
+			
+			window.reloadPage = function() {
+				const frame = document.getElementById('sj-frame');
+				if (frame && frame.src) {
+					frame.src = frame.src;
+				}
+			};
+			
+			window.inspectElement = function() {
+				alert('Inspect Element: Press F12 or right-click and select "Inspect"');
+			};
+			
+			window.toggleDarkMode = function() {
+				alert('Dark mode is already enabled!');
+			};
+			
+			window.toggleAboutBlank = function() {
+				const win = window.open();
+				win.document.body.innerHTML = `<iframe src="${window.location.href}" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;"></iframe>`;
+			};
+			
+			window.panicMode = function() {
+				window.location.href = 'https://www.google.com';
+			};
+			
+			window.openSettings = function() {
+				alert('Settings panel coming soon!');
 			};
 			
 			// Show navbar when iframe becomes visible, hide home content
