@@ -35,7 +35,232 @@
 				align-items: center;
 				justify-content: center;
 				padding: 40px 20px;
-				overflow-x: hidden;
+				overflow: hidden;
+				position: relative;
+			}
+			
+			/* Epic animated background with multiple layers */
+			body::before {
+				content: '';
+				position: fixed;
+				top: -50%;
+				left: -50%;
+				width: 200%;
+				height: 200%;
+				background: 
+					radial-gradient(circle at 30% 50%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+					radial-gradient(circle at 70% 50%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
+					radial-gradient(circle at 50% 30%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+				animation: rotate 30s linear infinite;
+				z-index: -3;
+			}
+			
+			/* Animated wave pattern background */
+			body::after {
+				content: '';
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: 
+					repeating-linear-gradient(
+						0deg,
+						transparent,
+						transparent 2px,
+						rgba(0, 191, 255, 0.03) 2px,
+						rgba(0, 191, 255, 0.03) 4px
+					),
+					repeating-linear-gradient(
+						90deg,
+						transparent,
+						transparent 2px,
+						rgba(138, 43, 226, 0.03) 2px,
+						rgba(138, 43, 226, 0.03) 4px
+					);
+				background-size: 100px 100px;
+				animation: waveMove 15s linear infinite;
+				z-index: -2;
+				opacity: 0.5;
+			}
+			
+			/* Floating hexagonal shapes */
+			.bg-shape {
+				position: fixed;
+				width: 100px;
+				height: 115px;
+				border: 2px solid;
+				opacity: 0.15;
+				animation: floatShape 25s ease-in-out infinite;
+				z-index: -1;
+				clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+			}
+			
+			.bg-shape:nth-child(1) {
+				width: 200px;
+				height: 230px;
+				border-color: #00bfff;
+				top: 15%;
+				left: 10%;
+				animation-delay: 0s;
+				animation-duration: 20s;
+				filter: blur(1px);
+			}
+			
+			.bg-shape:nth-child(2) {
+				width: 150px;
+				height: 172px;
+				border-color: #8a2be2;
+				top: 50%;
+				right: 15%;
+				animation-delay: -8s;
+				animation-duration: 25s;
+				filter: blur(1px);
+			}
+			
+			.bg-shape:nth-child(3) {
+				width: 120px;
+				height: 138px;
+				border-color: #ff00ff;
+				bottom: 20%;
+				left: 25%;
+				animation-delay: -15s;
+				animation-duration: 30s;
+				filter: blur(1px);
+			}
+			
+			.bg-shape:nth-child(4) {
+				width: 180px;
+				height: 207px;
+				border-color: #00ffff;
+				top: 30%;
+				right: 35%;
+				animation-delay: -5s;
+				animation-duration: 22s;
+				filter: blur(1px);
+			}
+			
+			@keyframes rotate {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
+			
+			@keyframes waveMove {
+				0% { 
+					background-position: 0 0, 0 0;
+					opacity: 0.3;
+				}
+				50% {
+					opacity: 0.6;
+				}
+				100% { 
+					background-position: 100px 100px, -100px -100px;
+					opacity: 0.3;
+				}
+			}
+			
+			@keyframes floatShape {
+				0%, 100% { 
+					transform: translate(0, 0) rotate(0deg) scale(1);
+					opacity: 0.15;
+				}
+				25% { 
+					transform: translate(40px, -40px) rotate(90deg) scale(1.1);
+					opacity: 0.2;
+				}
+				50% { 
+					transform: translate(-30px, -80px) rotate(180deg) scale(0.9);
+					opacity: 0.12;
+				}
+				75% { 
+					transform: translate(-50px, -40px) rotate(270deg) scale(1.05);
+					opacity: 0.18;
+				}
+			}
+			
+			@keyframes glow {
+				0%, 100% { 
+					text-shadow: 
+						0 0 10px rgba(0, 191, 255, 0.8),
+						0 0 20px rgba(0, 191, 255, 0.6),
+						0 0 30px rgba(138, 43, 226, 0.4);
+				}
+				50% { 
+					text-shadow: 
+						0 0 20px rgba(0, 191, 255, 1),
+						0 0 30px rgba(0, 191, 255, 0.8),
+						0 0 40px rgba(138, 43, 226, 0.6),
+						0 0 50px rgba(255, 0, 255, 0.4);
+				}
+			}
+			
+			@keyframes floatLogo {
+				0%, 100% { 
+					transform: translateY(0px) rotate(0deg);
+				}
+				25% {
+					transform: translateY(-15px) rotate(2deg);
+				}
+				50% { 
+					transform: translateY(-25px) rotate(0deg);
+				}
+				75% {
+					transform: translateY(-15px) rotate(-2deg);
+				}
+			}
+			
+			/* Particle effects - falling and rising */
+			.particle {
+				position: fixed;
+				width: 4px;
+				height: 4px;
+				background: #00bfff;
+				border-radius: 50%;
+				pointer-events: none;
+				z-index: -1;
+				box-shadow: 0 0 10px rgba(0, 191, 255, 0.8);
+			}
+			
+			.particle.fall {
+				animation: particle-fall linear infinite;
+			}
+			
+			.particle.rise {
+				animation: particle-rise linear infinite;
+			}
+			
+			@keyframes particle-fall {
+				0% {
+					transform: translateY(-100vh) translateX(0) rotate(0deg);
+					opacity: 0;
+				}
+				10% {
+					opacity: 1;
+				}
+				90% {
+					opacity: 1;
+				}
+				100% {
+					transform: translateY(100vh) translateX(-30px) rotate(360deg);
+					opacity: 0;
+				}
+			}
+			
+			@keyframes particle-rise {
+				0% {
+					transform: translateY(100vh) translateX(0) rotate(0deg);
+					opacity: 0;
+				}
+				10% {
+					opacity: 1;
+				}
+				90% {
+					opacity: 1;
+				}
+				100% {
+					transform: translateY(-100vh) translateX(50px) rotate(-360deg);
+					opacity: 0;
+				}
 			}
 			
 			/* Make sure everything centers properly */
@@ -50,6 +275,8 @@
 				height: auto;
 				display: block;
 				margin: 0 auto 20px auto;
+				animation: floatLogo 6s ease-in-out infinite;
+				filter: drop-shadow(0 0 30px rgba(0, 191, 255, 0.8)) drop-shadow(0 0 60px rgba(138, 43, 226, 0.4));
 			}
 			
 			.logo-wrapper h1 {
@@ -57,6 +284,7 @@
 				font-size: 3rem;
 				letter-spacing: 5px;
 				margin-top: 10px;
+				animation: glow 4s ease-in-out infinite;
 			}
 			
 			.desc {
@@ -351,19 +579,49 @@
 				flex: 1;
 				overflow: auto;
 				padding: 20px;
+				background: #242424;
 			}
 			
-			.inspect-code {
-				background: #0a0a0a;
-				border: 1px solid #333;
-				border-radius: 4px;
-				padding: 15px;
-				color: #0f0;
+			.inspect-tree {
 				font-family: 'Courier New', monospace;
 				font-size: 12px;
-				white-space: pre-wrap;
-				overflow: auto;
-				max-height: 100%;
+				line-height: 1.6;
+			}
+			
+			.inspect-element {
+				margin-left: 20px;
+			}
+			
+			.inspect-tag {
+				color: #e06c75;
+			}
+			
+			.inspect-attr-name {
+				color: #d19a66;
+			}
+			
+			.inspect-attr-value {
+				color: #98c379;
+			}
+			
+			.inspect-text {
+				color: #abb2bf;
+			}
+			
+			.inspect-toggle {
+				cursor: pointer;
+				user-select: none;
+				color: #61afef;
+				display: inline-block;
+				width: 12px;
+			}
+			
+			.inspect-children {
+				display: block;
+			}
+			
+			.inspect-children.collapsed {
+				display: none;
 			}
 			
 			/* Settings Modal */
@@ -510,6 +768,12 @@
 		</style>
 	</head>
 	<body>
+		<!-- Background geometric shapes -->
+		<div class="bg-shape"></div>
+		<div class="bg-shape"></div>
+		<div class="bg-shape"></div>
+		<div class="bg-shape"></div>
+		
 		<!-- Navbar (hidden by default, shows when browsing) -->
 		<nav class="zenith-navbar" id="zenith-navbar">
 			<div class="nav-left" onclick="window.zenithGoHome()">
@@ -591,7 +855,7 @@
 					<button class="inspect-close" onclick="window.closeInspect()">×</button>
 				</div>
 				<div class="inspect-body">
-					<div class="inspect-code" id="inspect-code">Loading...</div>
+					<div class="inspect-tree" id="inspect-tree"></div>
 				</div>
 			</div>
 		</div>
@@ -714,24 +978,78 @@
 				}
 			};
 			
-			// Custom Inspect Element
+			// Custom Inspect Element - Chrome DevTools style
 			window.inspectElement = function() {
 				const modal = document.getElementById('inspect-modal');
-				const codeEl = document.getElementById('inspect-code');
+				const treeEl = document.getElementById('inspect-tree');
 				const frame = document.getElementById('sj-frame');
 				
 				if (frame && frame.contentWindow) {
 					try {
-						const html = frame.contentWindow.document.documentElement.outerHTML;
-						codeEl.textContent = html;
+						const doc = frame.contentWindow.document.documentElement;
+						treeEl.innerHTML = renderElement(doc, 0);
 					} catch(e) {
-						codeEl.textContent = 'Cannot inspect: Cross-origin frame\n\nError: ' + e.message;
+						treeEl.innerHTML = '<div style="color:#e06c75;">Cannot inspect: Cross-origin frame<br><br>Error: ' + e.message + '</div>';
 					}
 				} else {
-					codeEl.textContent = '<!-- No page loaded -->';
+					treeEl.innerHTML = '<div style="color:#61afef;"><!-- No page loaded --></div>';
 				}
 				
 				modal.classList.add('show');
+			};
+			
+			function renderElement(el, depth) {
+				if (!el) return '';
+				
+				const tagName = el.tagName?.toLowerCase();
+				if (!tagName) return '';
+				
+				const attrs = Array.from(el.attributes || [])
+					.map(attr => `<span class="inspect-attr-name">${attr.name}</span>=<span class="inspect-attr-value">"${attr.value}"</span>`)
+					.join(' ');
+				
+				const hasChildren = el.children.length > 0;
+				const toggleId = 'toggle-' + Math.random().toString(36).substr(2, 9);
+				
+				let html = '<div class="inspect-element">';
+				
+				if (hasChildren) {
+					html += `<span class="inspect-toggle" onclick="window.toggleInspectNode('${toggleId}')">▼</span> `;
+				} else {
+					html += '<span class="inspect-toggle" style="visibility:hidden;">▼</span> ';
+				}
+				
+				html += `<span class="inspect-tag">&lt;${tagName}</span>`;
+				if (attrs) html += ` ${attrs}`;
+				html += `<span class="inspect-tag">&gt;</span>`;
+				
+				if (hasChildren) {
+					html += `<div id="${toggleId}" class="inspect-children">`;
+					for (let child of el.children) {
+						html += renderElement(child, depth + 1);
+					}
+					html += `</div><span class="inspect-tag">&lt;/${tagName}&gt;</span>`;
+				} else if (el.textContent && el.textContent.trim()) {
+					const text = el.textContent.trim().substring(0, 50);
+					html += `<span class="inspect-text">${text}${el.textContent.length > 50 ? '...' : ''}</span>`;
+					html += `<span class="inspect-tag">&lt;/${tagName}&gt;</span>`;
+				} else {
+					html += `<span class="inspect-tag">&lt;/${tagName}&gt;</span>`;
+				}
+				
+				html += '</div>';
+				return html;
+			}
+			
+			window.toggleInspectNode = function(id) {
+				const el = document.getElementById(id);
+				if (el) {
+					el.classList.toggle('collapsed');
+					const toggle = el.previousElementSibling;
+					if (toggle && toggle.classList.contains('inspect-toggle')) {
+						toggle.textContent = el.classList.contains('collapsed') ? '▶' : '▼';
+					}
+				}
 			};
 			
 			window.closeInspect = function() {
@@ -745,6 +1063,16 @@
 				
 				body.classList.toggle('light-mode');
 				toggle.classList.toggle('active');
+				
+				// Change iframe background color
+				const frame = document.getElementById('sj-frame');
+				if (frame) {
+					if (body.classList.contains('light-mode')) {
+						frame.style.background = 'white';
+					} else {
+						frame.style.background = '#1a1a1a';
+					}
+				}
 				
 				// Save preference
 				localStorage.setItem('zenith-theme', body.classList.contains('light-mode') ? 'light' : 'dark');
@@ -881,7 +1209,44 @@
 				
 				// Check periodically in case the mutation observer misses something
 				setInterval(updateUIState, 500);
+				
+				// Generate particles
+				createParticles();
 			});
+			
+			// Create animated particles - mix of falling and rising
+			function createParticles() {
+				const particleCount = 40; // More particles for better effect
+				for (let i = 0; i < particleCount; i++) {
+					setTimeout(() => {
+						const particle = document.createElement('div');
+						particle.className = 'particle';
+						
+						// Randomly make particles fall or rise
+						if (Math.random() > 0.5) {
+							particle.classList.add('fall');
+						} else {
+							particle.classList.add('rise');
+						}
+						
+						particle.style.left = Math.random() * 100 + '%';
+						particle.style.animationDuration = (Math.random() * 8 + 12) + 's';
+						particle.style.animationDelay = Math.random() * 5 + 's';
+						
+						// Random colors with different sizes
+						const colors = ['#00bfff', '#8a2be2', '#ff00ff', '#00ffff'];
+						const sizes = [3, 4, 5];
+						const size = sizes[Math.floor(Math.random() * sizes.length)];
+						
+						particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+						particle.style.boxShadow = `0 0 ${size * 3}px ${particle.style.background}`;
+						particle.style.width = size + 'px';
+						particle.style.height = size + 'px';
+						
+						document.body.appendChild(particle);
+					}, i * 300);
+				}
+			}
 		</script>
 	</body>
 </html>
