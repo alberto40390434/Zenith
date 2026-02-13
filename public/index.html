@@ -129,7 +129,7 @@
 				justify-content: space-between;
 				padding: 0 20px;
 				border-bottom: 1px solid #1a1a1a;
-				z-index: 10000;
+				z-index: 10000; /* Higher than iframe */
 			}
 			
 			.zenith-navbar.visible {
@@ -194,7 +194,7 @@
 				width: 100% !important;
 				height: 100vh !important;
 				border: none !important;
-				z-index: 9999 !important;
+				z-index: 9000 !important; /* Below navbar */
 			}
 			
 			body.browsing #sj-frame {
@@ -269,35 +269,49 @@
 			};
 			
 			// Show navbar when iframe becomes visible, hide home content
-			const observer = new MutationObserver(() => {
+			function updateUIState() {
 				const frame = document.getElementById('sj-frame');
 				const navbar = document.getElementById('zenith-navbar');
 				const homeContent = document.querySelector('body > div[style*="max-width"]');
 				const footer = document.querySelector('footer');
 				
 				if (frame && navbar) {
-					if (frame.style.display !== 'none' && frame.src) {
+					// Check if iframe is visible and has content
+					const isBrowsing = frame.style.display === 'block' || (frame.style.display !== 'none' && frame.src);
+					
+					if (isBrowsing) {
 						// Browsing mode: show navbar, hide home content
 						navbar.classList.add('visible');
+						navbar.style.display = 'flex';
 						document.body.classList.add('browsing');
 						if (homeContent) homeContent.style.display = 'none';
 						if (footer) footer.style.display = 'none';
+						console.log('Navbar shown - browsing mode');
 					} else {
 						// Home mode: hide navbar, show home content
 						navbar.classList.remove('visible');
+						navbar.style.display = 'none';
 						document.body.classList.remove('browsing');
 						if (homeContent) homeContent.style.display = 'block';
 						if (footer) footer.style.display = 'block';
+						console.log('Navbar hidden - home mode');
 					}
 				}
-			});
+			}
+			
+			const observer = new MutationObserver(updateUIState);
 			
 			// Start observing once the iframe exists
 			window.addEventListener('load', () => {
 				const frame = document.getElementById('sj-frame');
 				if (frame) {
 					observer.observe(frame, { attributes: true, attributeFilter: ['style', 'src'] });
+					// Also check immediately
+					updateUIState();
 				}
+				
+				// Check periodically in case the mutation observer misses something
+				setInterval(updateUIState, 500);
 			});
 		</script>
 	</body>
