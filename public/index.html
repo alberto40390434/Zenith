@@ -185,8 +185,6 @@
     </footer>
 
     <script type="module">
-        import { BareMuxConnection } from "/baremux/index.js";
-
         const address = document.getElementById("sj-address");
         const navAddress = document.getElementById("nav-address");
         const form = document.getElementById("sj-form");
@@ -198,6 +196,9 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
+                    // Wait for bare-mux to load from the script tag
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
                     // Initialize bare-mux first
                     const connection = new BareMuxConnection("/baremux/worker.js");
                     await connection.setTransport("/libcurl/index.mjs", [{ wisp: "wss://" + location.host + "/wisp/" }]);
