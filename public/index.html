@@ -1,269 +1,285 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Zenith | AC</title>
-    <link rel="icon" type="image/png" href="Zenith.png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            color: white;
-            font-family: sans-serif;
-            overflow: hidden;
-        }
-        
-        .navbar {
-            height: 45px;
-            background: #0a0a0a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 1px solid #1a1a1a;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-        
-        .nav-left { 
-            display: flex; 
-            align-items: center; 
-            cursor: pointer; 
-        }
-        
-        .nav-logo { 
-            height: 25px; 
-            margin-right: 10px; 
-        }
-        
-        .nav-title { 
-            font-weight: bold; 
-            letter-spacing: 1px; 
-        }
-        
-        .nav-center { 
-            flex-grow: 1; 
-            display: flex; 
-            justify-content: center; 
-        }
-        
-        .nav-input {
-            width: 400px;
-            background: #151515;
-            border: 1px solid #333;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            outline: none;
-        }
-        
-        .nav-input:focus {
-            border-color: #555;
-        }
-        
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: #888;
-            margin-left: 15px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .nav-btn:hover { 
-            color: white; 
-        }
-        
-        #content-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding-top: 45px;
-        }
-        
-        .logo-wrapper {
-            text-align: center;
-        }
-        
-        .logo-wrapper h1 { 
-            font-size: 3rem; 
-            margin-top: 10px; 
-            letter-spacing: 5px; 
-        }
-        
-        .logo { 
-            width: 150px; 
-        }
-        
-        #sj-address {
-            width: 500px;
-            padding: 15px 25px;
-            border-radius: 30px;
-            border: 1px solid #333;
-            background: #0a0a0a;
-            color: white;
-            font-size: 18px;
-            margin-top: 20px;
-            outline: none;
-        }
-        
-        #sj-address:focus {
-            border-color: #555;
-        }
-        
-        footer {
-            position: fixed;
-            bottom: 10px;
-            width: 100%;
-            text-align: center;
-            font-size: 10px;
-            color: #444;
-        }
-        
-        #sj-frame {
-            position: fixed;
-            top: 45px;
-            left: 0;
-            width: 100%;
-            height: calc(100vh - 45px);
-            border: none;
-            display: none;
-            background: white;
-        }
-    </style>
-    <script src="/scram/scramjet.all.js" type="module"></script>
-    <script src="/baremux/index.js" type="module"></script>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-left" onclick="goHome()">
-            <img src="Zenith.png" class="nav-logo" alt="Zenith Logo">
-            <span class="nav-title">ZENITH</span>
-        </div>
-        <div class="nav-center">
-            <form id="nav-form">
-                <input id="nav-address" type="text" placeholder="Search with Zenith..." class="nav-input">
-            </form>
-        </div>
-        <div class="nav-right">
-            <button onclick="goHome()" class="nav-btn" type="button">🏠 HOME</button>
-            <button class="nav-btn" type="button">⌨️ COMMANDS</button>
-            <button class="nav-btn" type="button">⚙️ SETTINGS</button>
-        </div>
-    </nav>
-
-    <div id="content-area">
-        <div class="logo-wrapper">
-            <img class="logo" src="Zenith.png" alt="Zenith Logo" />
-            <h1>ZENITH | AC</h1>
-        </div>
-        <form id="sj-form">
-            <input id="sj-address" type="text" placeholder="Explore the web freely..." autofocus />
-        </form>
-        <p style="margin-top: 30px; max-width: 600px; text-align: center; color: #666; font-size: 14px;">
-            Scramjet is an experimental interception based web proxy designed to evade internet censorship, bypass arbitrary web browser restrictions and innovate web proxy technologies.
-        </p>
-    </div>
-
-    <iframe id="sj-frame"></iframe>
-
-    <footer>
-        <div><span>Zenith &copy; 2026</span></div>
-    </footer>
-
-    <script type="module">
-        const address = document.getElementById("sj-address");
-        const navAddress = document.getElementById("nav-address");
-        const form = document.getElementById("sj-form");
-        const navForm = document.getElementById("nav-form");
-        const iframe = document.getElementById("sj-frame");
-        const contentArea = document.getElementById("content-area");
-
-        // Initialize bare-mux and register service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    // Wait for bare-mux to load from the script tag
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    // Initialize bare-mux first
-                    const connection = new BareMuxConnection("/baremux/worker.js");
-                    await connection.setTransport("/libcurl/index.mjs", [{ wisp: "wss://" + location.host + "/wisp/" }]);
-                    console.log('Bare-mux initialized');
-                    
-                    // Then register service worker
-                    await navigator.serviceWorker.register('/sw.js', { scope: '/service/' });
-                    console.log('Service worker registered successfully');
-                } catch (err) {
-                    console.error('Initialization failed:', err);
-                }
-            });
-        }
-
-        async function search(input) {
-            try {
-                let url = input.trim();
-                
-                // If it looks like a search query (no dots or has spaces), use Google
-                if (!url.includes('.') || url.includes(' ')) {
-                    url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-                } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    // Add https if no protocol
-                    url = 'https://' + url;
-                }
-
-                // Hide home screen, show iframe
-                contentArea.style.display = 'none';
-                iframe.style.display = 'block';
-                
-                // Load the proxied URL
-                iframe.src = "/service/" + encodeURIComponent(url);
-                
-                // Update nav bar input
-                navAddress.value = url;
-            } catch (err) {
-                alert("Error loading page: " + err.message);
-            }
-        }
-
-        // Main search form
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            if (address.value) {
-                await search(address.value);
-            }
-        });
-
-        // Navbar search form
-        navForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            if (navAddress.value) {
-                await search(navAddress.value);
-            }
-        });
-
-        // Go home function
-        window.goHome = function() {
-            iframe.style.display = 'none';
-            contentArea.style.display = 'flex';
-            iframe.src = '';
-            address.value = '';
-            navAddress.value = '';
-            address.focus();
-        };
-    </script>
-</body>
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+		/>
+		<title>Zenith | AC</title>
+		<link rel="shortcut icon" href="Zenith.png" />
+	
+		<script src="/scram/scramjet.all.js"></script>
+		<script src="/baremux/index.js"></script>
+		
+		<link rel="stylesheet" href="index.css" />
+		<script src="register-sw.js" defer></script>
+		<script src="search.js" defer></script>
+		<script src="index.js" defer></script>
+		
+		<style>
+			/* Black background theme */
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			
+			body {
+				background-color: #000 !important;
+				color: white !important;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 40px 20px;
+				overflow-x: hidden;
+			}
+			
+			/* Make sure everything centers properly */
+			.logo-wrapper {
+				text-align: center;
+				margin-bottom: 30px;
+				width: 100%;
+			}
+			
+			.logo-wrapper .logo {
+				width: 150px;
+				height: auto;
+				display: block;
+				margin: 0 auto 20px auto;
+			}
+			
+			.logo-wrapper h1 {
+				color: white;
+				font-size: 3rem;
+				letter-spacing: 5px;
+				margin-top: 10px;
+			}
+			
+			.desc {
+				text-align: center;
+				max-width: 600px;
+				margin: 20px auto;
+			}
+			
+			.desc p {
+				color: #ccc;
+				font-size: 14px;
+				line-height: 1.6;
+			}
+			
+			#sj-form {
+				width: 100%;
+				display: flex;
+				justify-content: center;
+				margin: 30px 0;
+			}
+			
+			#sj-address {
+				width: 500px;
+				max-width: 90%;
+				background: #0a0a0a;
+				border: 1px solid #333;
+				color: white;
+				padding: 15px 25px;
+				border-radius: 30px;
+				font-size: 18px;
+			}
+			
+			#sj-address:focus {
+				border-color: #555;
+				outline: none;
+			}
+			
+			#sj-error, #sj-error-code {
+				color: #ff6b6b;
+				text-align: center;
+			}
+			
+			footer {
+				color: #666;
+				text-align: center;
+				margin-top: auto;
+				padding: 20px;
+				font-size: 12px;
+			}
+			
+			footer a {
+				color: #888;
+				text-decoration: none;
+			}
+			
+			footer a:hover {
+				color: white;
+			}
+			
+			/* Navbar styles */
+			.zenith-navbar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 45px;
+				background: #0a0a0a;
+				display: none; /* Hidden by default, shown when browsing */
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				border-bottom: 1px solid #1a1a1a;
+				z-index: 10000;
+			}
+			
+			.zenith-navbar.visible {
+				display: flex;
+			}
+			
+			.nav-left { 
+				display: flex; 
+				align-items: center; 
+				cursor: pointer; 
+			}
+			
+			.nav-logo { 
+				height: 25px; 
+				margin-right: 10px; 
+			}
+			
+			.nav-title { 
+				font-weight: bold; 
+				letter-spacing: 1px;
+				color: white;
+			}
+			
+			.nav-center { 
+				flex-grow: 1; 
+				display: flex; 
+				justify-content: center; 
+			}
+			
+			.nav-input {
+				width: 400px;
+				background: #151515;
+				border: 1px solid #333;
+				color: white;
+				padding: 5px 15px;
+				border-radius: 20px;
+				outline: none;
+			}
+			
+			.nav-input:focus {
+				border-color: #555;
+			}
+			
+			.nav-btn {
+				background: transparent;
+				border: none;
+				color: #888;
+				margin-left: 15px;
+				cursor: pointer;
+				font-size: 12px;
+			}
+			
+			.nav-btn:hover { 
+				color: white; 
+			}
+			
+			/* Adjust iframe when navbar is visible */
+			body.browsing #sj-frame {
+				top: 45px !important;
+				height: calc(100vh - 45px) !important;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Navbar (hidden by default, shows when browsing) -->
+		<nav class="zenith-navbar" id="zenith-navbar">
+			<div class="nav-left" onclick="window.zenithGoHome()">
+				<img src="Zenith.png" class="nav-logo" alt="Zenith">
+				<span class="nav-title">ZENITH</span>
+			</div>
+			<div class="nav-center">
+				<form id="nav-form" onsubmit="return window.zenithNavSearch(event)">
+					<input id="nav-address" type="text" placeholder="Search with Zenith..." class="nav-input">
+				</form>
+			</div>
+			<div class="nav-right">
+				<button onclick="window.zenithGoHome()" class="nav-btn" type="button">🏠 HOME</button>
+			</div>
+		</nav>
+	
+		<div style="width: 100%; max-width: 800px; margin: auto;">
+			<div class="logo-wrapper">
+				<img class="logo" src="Zenith.png" alt="Zenith" />
+				<h1>ZENITH | AC</h1>
+			</div>
+			<div class="desc">
+				<p>
+					Scramjet is an experimental interception based web proxy designed to
+					evade internet censorship, bypass arbitrary web browser restrictions and
+					innovate web proxy technologies.
+				</p>
+			</div>
+			<form id="sj-form">
+				<input
+					id="sj-search-engine"
+					value="https://www.google.com/search?q=%s"
+					type="hidden"
+				/>
+				<input id="sj-address" type="text" placeholder="Explore the web freely..." />
+			</form>
+			<div class="desc">
+				<p id="sj-error"></p>
+				<pre id="sj-error-code"></pre>
+			</div>
+		</div>
+		<footer>
+			<div>
+				<span>Zenith &copy; 2026</span>
+			</div>
+		</footer>
+		
+		<script>
+			// Navbar functionality - doesn't interfere with Scramjet
+			window.zenithNavSearch = function(event) {
+				event.preventDefault();
+				const navInput = document.getElementById('nav-address');
+				const mainInput = document.getElementById('sj-address');
+				if (navInput.value && mainInput) {
+					mainInput.value = navInput.value;
+					document.getElementById('sj-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+				}
+				return false;
+			};
+			
+			window.zenithGoHome = function() {
+				location.reload();
+			};
+			
+			// Show navbar when iframe becomes visible
+			const observer = new MutationObserver(() => {
+				const frame = document.getElementById('sj-frame');
+				const navbar = document.getElementById('zenith-navbar');
+				if (frame && navbar) {
+					if (frame.style.display !== 'none' && frame.src) {
+						navbar.classList.add('visible');
+						document.body.classList.add('browsing');
+					} else {
+						navbar.classList.remove('visible');
+						document.body.classList.remove('browsing');
+					}
+				}
+			});
+			
+			// Start observing once the iframe exists
+			window.addEventListener('load', () => {
+				const frame = document.getElementById('sj-frame');
+				if (frame) {
+					observer.observe(frame, { attributes: true, attributeFilter: ['style', 'src'] });
+				}
+			});
+		</script>
+	</body>
 </html>
