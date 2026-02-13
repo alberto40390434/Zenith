@@ -914,7 +914,7 @@
 			<form id="sj-form">
 				<input
 					id="sj-search-engine"
-					value="https://www.google.com/search?q=%s"
+					value="https://duckduckgo.com/?q=%s"
 					type="hidden"
 				/>
 				<input id="sj-address" type="text" placeholder="Explore the web freely..." />
@@ -1013,7 +1013,6 @@
 			
 			function createHomeTab() {
 				const tabId = ++tabIdCounter;
-				homeTabId = tabId;
 				
 				const tab = {
 					id: tabId,
@@ -1061,9 +1060,18 @@
 						renderTabs();
 					} catch(e) {
 						// Cross-origin, use URL as title
-						tab.title = url.replace('/service/', '').substring(0, 30);
+						try {
+							const urlObj = new URL(iframe.src);
+							tab.title = urlObj.hostname;
+						} catch(e2) {
+							tab.title = 'Page';
+						}
 						renderTabs();
 					}
+					
+					// Apply dark mode if enabled
+					const isLightMode = document.body.classList.contains('light-mode');
+					applyDarkModeToIframe(iframe, !isLightMode);
 				};
 				
 				// Set src after a tiny delay to prevent error flash
@@ -1166,13 +1174,13 @@
 			}
 			
 			window.addNewTab = function() {
-				// Create home tab if it doesn't exist
-				if (!homeTabId || !tabs.find(t => t.id === homeTabId)) {
-					createHomeTab();
-				}
-				
-				// Create new empty tab that shows home screen
+				// Create a new home tab
 				createHomeTab();
+				
+				// Show navbar if not shown
+				const navbar = document.getElementById('zenith-navbar');
+				if (navbar) navbar.style.display = 'flex';
+				document.body.classList.add('browsing');
 			};
 			
 			window.closeTab = closeTab;
@@ -1190,11 +1198,17 @@
 			};
 			
 			window.zenithGoHome = function() {
-				// If we're browsing, switch to home tab. If no tabs, go to actual home
-				if (homeTabId && tabs.find(t => t.id === homeTabId)) {
-					switchToTab(homeTabId);
+				// Find any home tab
+				const homeTab = tabs.find(t => t.isHome);
+				
+				if (homeTab) {
+					// Switch to existing home tab
+					switchToTab(homeTab.id);
+				} else if (tabs.length > 0) {
+					// Create a new home tab
+					createHomeTab();
 				} else {
-					// Close all tabs
+					// No tabs at all - go to actual home screen
 					tabs.forEach(tab => {
 						if (tab.iframe) tab.iframe.remove();
 					});
@@ -1226,19 +1240,17 @@
 						if (!input.value.trim()) return;
 						
 						let url = input.value.trim();
+						
+						// Check if it's a search query or a URL
 						if (!url.includes('.') || url.includes(' ')) {
-							const searchEngine = document.getElementById('sj-search-engine')?.value || 'https://www.google.com/search?q=%s';
+							// It's a search query - use the selected search engine
+							const searchEngine = localStorage.getItem('search-engine') || document.getElementById('sj-search-engine')?.value || 'https://duckduckgo.com/?q=%s';
 							url = searchEngine.replace('%s', encodeURIComponent(url));
 						} else if (!url.startsWith('http')) {
 							url = 'https://' + url;
 						}
 						
-						// Create home tab if it doesn't exist
-						if (!homeTabId || !tabs.find(t => t.id === homeTabId)) {
-							createHomeTab();
-						}
-						
-						// Create new tab with URL
+						// Just create the search tab - no automatic home tab
 						createTab('/service/' + encodeURIComponent(url), url);
 						
 						// Show navbar
@@ -1246,6 +1258,9 @@
 						if (navbar) navbar.style.display = 'flex';
 						
 						document.body.classList.add('browsing');
+						
+						// Clear the input
+						input.value = '';
 					});
 				}
 			});
@@ -1371,46 +1386,65 @@
 				body.classList.toggle('light-mode');
 				toggle.classList.toggle('active');
 				
-				// Change iframe background and inject styles
-				const frame = document.getElementById('sj-frame');
-				if (frame) {
-					const isLightMode = body.classList.contains('light-mode');
-					
-					if (isLightMode) {
-						frame.style.background = 'white';
-					} else {
-						frame.style.background = '#1a1a1a';
-					}
-					
-					// Try to inject dark mode styles into the iframe
-					try {
-						const iframeDoc = frame.contentWindow.document;
-						let styleEl = iframeDoc.getElementById('zenith-dark-mode');
-						
-						if (!isLightMode && !styleEl) {
-							// Add dark mode styles
-							styleEl = iframeDoc.createElement('style');
-							styleEl.id = 'zenith-dark-mode';
-							styleEl.textContent = `
-								body { background-color: #1a1a1a !important; color: #e0e0e0 !important; }
-								* { background-color: inherit; }
-								input, textarea, select { background-color: #2a2a2a !important; color: white !important; border-color: #444 !important; }
-								a { color: #4d9fff !important; }
-							`;
-							iframeDoc.head.appendChild(styleEl);
-						} else if (isLightMode && styleEl) {
-							// Remove dark mode styles
-							styleEl.remove();
+				const isLightMode = body.classList.contains('light-mode');
+				
+				// Apply to all open iframes
+				tabs.forEach(tab => {
+					if (tab.iframe) {
+						if (isLightMode) {
+							tab.iframe.style.background = 'white';
+						} else {
+							tab.iframe.style.background = '#1a1a1a';
 						}
-					} catch(e) {
-						// Cross-origin iframe, can't inject styles
-						console.log('Cannot inject styles into cross-origin iframe');
+						
+						// Inject dark mode styles
+						applyDarkModeToIframe(tab.iframe, !isLightMode);
 					}
-				}
+				});
 				
 				// Save preference
-				localStorage.setItem('zenith-theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+				localStorage.setItem('zenith-theme', isLightMode ? 'light' : 'dark');
 			};
+			
+			function applyDarkModeToIframe(iframe, isDark) {
+				try {
+					const iframeDoc = iframe.contentWindow.document;
+					let styleEl = iframeDoc.getElementById('zenith-dark-mode');
+					
+					if (isDark && !styleEl) {
+						// Add dark mode styles
+						styleEl = iframeDoc.createElement('style');
+						styleEl.id = 'zenith-dark-mode';
+						styleEl.textContent = `
+							html { background-color: #1a1a1a !important; }
+							body { 
+								background-color: #1a1a1a !important; 
+								color: #e0e0e0 !important; 
+							}
+							div, section, article, header, footer, main, aside, nav { 
+								background-color: transparent !important; 
+							}
+							input, textarea, select { 
+								background-color: #2a2a2a !important; 
+								color: white !important; 
+								border-color: #444 !important; 
+							}
+							a { color: #5dadff !important; }
+							button { 
+								background-color: #2a2a2a !important; 
+								color: white !important; 
+							}
+						`;
+						iframeDoc.head.appendChild(styleEl);
+					} else if (!isDark && styleEl) {
+						// Remove dark mode styles
+						styleEl.remove();
+					}
+				} catch(e) {
+					// Cross-origin iframe, can't inject styles
+					console.log('Cannot inject styles into iframe:', e.message);
+				}
+			}
 			
 			// Load saved theme on startup
 			window.addEventListener('load', function() {
@@ -1455,7 +1489,7 @@
 				modal.classList.add('show');
 				
 				// Load saved settings
-				const searchEngine = localStorage.getItem('search-engine') || 'https://www.google.com/search?q=%s';
+				const searchEngine = localStorage.getItem('search-engine') || 'https://duckduckgo.com/?q=%s';
 				const panicUrl = localStorage.getItem('panic-url') || 'https://www.google.com';
 				const tabTitle = localStorage.getItem('tab-title') || '';
 				const faviconUrl = localStorage.getItem('favicon-url') || '';
@@ -1469,6 +1503,14 @@
 				if (abToggle) {
 					abToggle.classList.toggle('active', abCloakEnabled);
 				}
+				
+				// Auto-save search engine when changed
+				document.getElementById('search-engine-select').onchange = function() {
+					localStorage.setItem('search-engine', this.value);
+					// Also update the hidden input
+					const searchInput = document.getElementById('sj-search-engine');
+					if (searchInput) searchInput.value = this.value;
+				};
 			};
 			
 			window.closeSettings = function() {
