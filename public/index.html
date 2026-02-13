@@ -188,29 +188,18 @@
 			
 			/* Adjust iframe when navbar is visible */
 			#sj-frame {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100vh;
-				border: none;
-				display: none;
-				background: white;
-				z-index: 9999;
+				position: fixed !important;
+				top: 0 !important;
+				left: 0 !important;
+				width: 100% !important;
+				height: 100vh !important;
+				border: none !important;
+				z-index: 9999 !important;
 			}
 			
 			body.browsing #sj-frame {
 				top: 45px !important;
 				height: calc(100vh - 45px) !important;
-				display: block !important;
-			}
-			
-			body.browsing > div:not(.zenith-navbar) {
-				display: none !important;
-			}
-			
-			body.browsing footer {
-				display: none !important;
 			}
 		</style>
 	</head>
@@ -279,17 +268,26 @@
 				location.reload();
 			};
 			
-			// Show navbar when iframe becomes visible
+			// Show navbar when iframe becomes visible, hide home content
 			const observer = new MutationObserver(() => {
 				const frame = document.getElementById('sj-frame');
 				const navbar = document.getElementById('zenith-navbar');
+				const homeContent = document.querySelector('body > div[style*="max-width"]');
+				const footer = document.querySelector('footer');
+				
 				if (frame && navbar) {
 					if (frame.style.display !== 'none' && frame.src) {
+						// Browsing mode: show navbar, hide home content
 						navbar.classList.add('visible');
 						document.body.classList.add('browsing');
+						if (homeContent) homeContent.style.display = 'none';
+						if (footer) footer.style.display = 'none';
 					} else {
+						// Home mode: hide navbar, show home content
 						navbar.classList.remove('visible');
 						document.body.classList.remove('browsing');
+						if (homeContent) homeContent.style.display = 'block';
+						if (footer) footer.style.display = 'block';
 					}
 				}
 			});
